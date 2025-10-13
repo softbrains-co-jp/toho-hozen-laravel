@@ -24,9 +24,13 @@
             {{ $code }}
         </div>
         @if ($code)
-            <div class="tw:border tw:border-gray-300 tw:text-center tw:p-1">
-                <x-button.gray>解除</x-button.gray>
-            </div>
+            <form method="post" action="{{ route('main.release', ['code' => $code]) }}">
+                <div class="tw:border tw:border-gray-300 tw:text-center tw:p-1">
+                    @csrf
+                    @method('PATCH')
+                    <x-button.gray type="submit">解除</x-button.gray>
+                </div>
+            </form>
         @endif
 
     </div>

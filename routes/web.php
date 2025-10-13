@@ -11,5 +11,6 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/', [HomeController::class, 'index'])->name('home.index');
     Route::get('/main/{code?}', [MainController::class, 'index'])->name('main.index');
     Route::post('/main/{code?}', [MainController::class, 'post'])->name('main.post');
+    Route::patch('/main/{code?}', [MainController::class, 'release'])->name('main.release');
 });
 

@@ -150,7 +150,38 @@ class MainController extends Controller
             $maintenance->fill($data);
             $maintenance->save();
 
+            return redirect()->route('main.index', ['code' => $code])->with('success', "データを更新しました。");
+        }
+    }
 
+    public function release(MainRequest $request, $code)
+    {
+        // ログインユーザ
+        $user = Auth::user();
+
+        if ($code) {
+            $maintenance = Maintenance::where(function($query) use ($code) {
+                $query->where('kddi_cd', $code)
+                    ->orWhere('toh_cd', $code);
+            })->first();
+
+            if (!$maintenance) {
+                return redirect()->route('main.index')->with('error', "該当の管理番号{$code}はありません。");
+            }
+
+            // 排他チェック
+            $is_exclusion = Exclusion::where('login_id', '!=', $user->login_id)
+                ->where('toh_cd', $maintenance->toh_cd)
+                ->exists();
+
+            if ($is_exclusion) {
+                return redirect()->route('main.index')->with('error', "該当の管理番号{$code}は他の方が使用しています。");
+            }
+
+            Exclusion::where('login_id', $user->login_id)
+                ->delete();
+
+            return redirect()->route('main.index')->with('success', "データを解放しました。");
         }
     }
 }
