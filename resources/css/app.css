@@ -18,11 +18,11 @@
     @apply tw:border tw:border-gray-400;
 }
 
-.hozen-table tr,
+.hozen-table th,
 .hozen-table td {
-    @apply tw:border tw:border-gray-400;
+    @apply tw:border tw:border-gray-400 tw:px-[5px] tw:py-[3px];
 }
 
-.hozen-table td {
-    @apply tw:px-[5px] tw:py-[3px];
+.hozen-table th {
+    @apply tw:bg-pink02 tw:font-normal;
 }

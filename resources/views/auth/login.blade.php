@@ -17,13 +17,13 @@
                 @csrf
                 <table class="hozen-table">
                     <tr>
-                        <td class="tw:bg-pink02 tw:w-[130px] tw:text-right">ログインID</td>
+                        <th class="tw:w-[130px] tw:text-right">ログインID</th>
                         <td class="tw:w-[300px]">
                             <x-input type="text" name="login_id" class="tw:input tw:text-[12pt]" required />
                         </td>
                     </tr>
                     <tr>
-                        <td class="tw:bg-pink02 tw:w-[130px] tw:text-right">パスワード</td>
+                        <th class="tw:w-[130px] tw:text-right">パスワード</th>
                         <td class="tw:w-[300px]">
                             <x-input type="password" name="password" class="tw:input tw:text-[12pt]" required />
                         </td>
