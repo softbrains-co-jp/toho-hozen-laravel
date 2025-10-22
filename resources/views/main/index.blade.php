@@ -167,11 +167,13 @@
                     </tbody>
                 </table>
                 <div class="tw:mt-[10px]">
-                    <x-button.gray type="button" x-on:click="togglePeriodInfo()" x-bind:class="{ 'tw:text-red-500': showPeriodInfo }" class="tw:mr-3">工期情報</x-button.gray>
-                    <x-button.gray type="button" x-on:click="toggleConstructionInfo()" x-bind:class="{ 'tw:text-red-500': showConstructionInfo }">工事情報</x-button.gray>
+                    <x-button.gray type="button" class="tw:mr-3" x-on:click="togglePeriodInfo()" x-bind:class="{ 'tw:text-red-500': showPeriodInfo }">工期情報</x-button.gray>
+                    <x-button.gray type="button" class="tw:mr-3" x-on:click="toggleConstructionInfo()" x-bind:class="{ 'tw:text-red-500': showConstructionInfo }">工事情報</x-button.gray>
+                    <x-button.gray type="button" class="tw:mr-3" x-on:click="toggleStopInfo()" x-bind:class="{ 'tw:text-red-500': showStopInfo }">停止情報</x-button.gray>
                 </div>
                 <x-main.period-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showPeriodInfo" />
                 <x-main.construction-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showConstructionInfo" />
+                <x-main.stop-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showStopInfo" />
             </div>
             <div class="tw:rows-start-2 tw:rows-end-3 tw:bg-pink01 tw:p-4 tw:flex tw:items-center tw:gap-x-[10px]">
                 <div class="">
@@ -196,6 +198,7 @@
             isChange: false,
             showPeriodInfo: false,
             showConstructionInfo: false,
+            showStopInfo: false,
             init() {
                 const form = this.$refs.form;
                 this.initForm = new FormData(form);
@@ -226,6 +229,9 @@
             },
             toggleConstructionInfo() {
                 this.showConstructionInfo = !this.showConstructionInfo;
+            },
+            toggleStopInfo() {
+                this.showStopInfo = !this.showStopInfo;
             },
 
         }

@@ -43,9 +43,9 @@ class Maintenance extends Model
             't_setup_action_date' => 'date:Y/m/d',
             'commit_date' => 'date:Y/m/d',
             'work_plan_date' => 'date:Y/m/d',
-            // 'work_start_datetime' => 'datetime:Y/m/d H:i:s',
-            // 'work_end_datetime' => 'datetime:Y/m/d H:i:s',
             'work_action_date' => 'date:Y/m/d',
             'kddi_check_date' => 'date:Y/m/d',
+            'stop_plan_date' => 'date:Y/m/d',
+            'stop_action_date' => 'date:Y/m/d',
     ];
 }
