@@ -20,7 +20,32 @@ class Maintenance extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'check_date' => 'date:Y/m/d',
+            'check_date' => 'date:Y/m/d',
+            't_term_start_date' => 'date:Y/m/d',
+            't_term_end_date' => 'date:Y/m/d',
+            't_term2_start_date' => 'date:Y/m/d',
+            't_term2_end_date' => 'date:Y/m/d',
+            'term_start_date' => 'date:Y/m/d',
+            'term_end_date' => 'date:Y/m/d',
+            'term2_start_date' => 'date:Y/m/d',
+            'term2_end_date' => 'date:Y/m/d',
+            'kddi_oder_date' => 'date:Y/m/d',
+            'report_date' => 'date:Y/m/d',
+            'work_report_date' => 'date:Y/m/d',
+            'conduct_commit_date' => 'date:Y/m/d',
+            'conduct_plan_date' => 'date:Y/m/d',
+            'conduct_action_date' => 'date:Y/m/d',
+            'conduct_report_date' => 'date:Y/m/d',
+            'check1_date' => 'date:Y/m/d',
+            'check2_date' => 'date:Y/m/d',
+            'check3_date' => 'date:Y/m/d',
+            't_setup_plan_date' => 'date:Y/m/d',
+            't_setup_action_date' => 'date:Y/m/d',
+            'commit_date' => 'date:Y/m/d',
+            'work_plan_date' => 'date:Y/m/d',
+            // 'work_start_datetime' => 'datetime:Y/m/d H:i:s',
+            // 'work_end_datetime' => 'datetime:Y/m/d H:i:s',
+            'work_action_date' => 'date:Y/m/d',
+            'kddi_check_date' => 'date:Y/m/d',
     ];
-
 }

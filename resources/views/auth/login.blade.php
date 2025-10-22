@@ -19,13 +19,13 @@
                     <tr>
                         <th class="tw:w-[130px] tw:text-right">ログインID</th>
                         <td class="tw:w-[300px]">
-                            <x-input type="text" name="login_id" class="tw:input tw:text-[12pt]" required />
+                            <x-forms.input type="text" name="login_id" class="tw:input tw:text-[12pt]" required />
                         </td>
                     </tr>
                     <tr>
                         <th class="tw:w-[130px] tw:text-right">パスワード</th>
                         <td class="tw:w-[300px]">
-                            <x-input type="password" name="password" class="tw:input tw:text-[12pt]" required />
+                            <x-forms.input type="password" name="password" class="tw:input tw:text-[12pt]" required />
                         </td>
                     </tr>
                 </table>

@@ -104,6 +104,8 @@ class MainController extends Controller
                     'edit_datetime' => now(),
                 ]);
             }
+
+            // 時分のフィールドのデータを統一（年月日時分秒や時分のみのデータなどになっている）
         }
 
         return view('main.index')
