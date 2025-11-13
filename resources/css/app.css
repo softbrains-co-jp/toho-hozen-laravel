@@ -19,7 +19,9 @@
     }
 }
 
-@plugin "daisyui";
+@plugin "daisyui" {
+    themes: corporate --default;
+}
 
 @import './table.css';
 @import './toastr.css';

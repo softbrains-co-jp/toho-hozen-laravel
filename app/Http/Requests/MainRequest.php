@@ -130,6 +130,62 @@ class MainRequest extends FormRequest
                 'nullable',
                 'date'
             ],
+            'add_order_date' => [
+                'nullable',
+                'date'
+            ],
+            'add_receive_date' => [
+                'nullable',
+                'date'
+            ],
+            'add_design_receive_date' => [
+                'nullable',
+                'date'
+            ],
+            'complete_order_date' => [
+                'nullable',
+                'date'
+            ],
+            'complete_receive_date' => [
+                'nullable',
+                'date'
+            ],
+            'cancel_order_date' => [
+                'nullable',
+                'date'
+            ],
+            'cancel_report_receive_date' => [
+                'nullable',
+                'date'
+            ],
+            'cancel_design_receive_date' => [
+                'nullable',
+                'date'
+            ],
+            'conduct_receive_date' => [
+                'nullable',
+                'date'
+            ],
+            't_work_receive_date' => [
+                'nullable',
+                'date'
+            ],
+            'complete_design_receive_date' => [
+                'nullable',
+                'date'
+            ],
+            'wire_change_order_date' => [
+                'nullable',
+                'date'
+            ],
+            'gemini_order_date' => [
+                'nullable',
+                'date'
+            ],
+            'complete_report_date' => [
+                'nullable',
+                'date'
+            ],
         ];
     }
 
@@ -162,6 +218,20 @@ class MainRequest extends FormRequest
             'work_plan_date' => '作業予定日',
             'work_action_date' => '作業実施日',
             'kddi_check_date' => 'KDDI確認依頼日',
+            'add_order_date' => '追加申請依頼日',
+            'add_receive_date' => '追加申請回答日',
+            'add_design_receive_date' => '追加申請図面受領日',
+            'complete_order_date' => '竣工報告依頼日',
+            'complete_receive_date' => '竣工届受理日',
+            'cancel_order_date' => '解除申請依頼日',
+            'cancel_report_receive_date' => '解除竣工届受領日',
+            'cancel_design_receive_date' => '解除申請図面受領日',
+            'conduct_receive_date' => '調査報告書受領日',
+            't_work_receive_date' => '仮工事報告書受領日',
+            'complete_design_receive_date' => '竣工図書受領日',
+            'wire_change_order_date' => '電線設備変更依頼書送信日',
+            'gemini_order_date' => 'GEMINI修正依頼日',
+            'complete_report_date' => '竣工報告日',
         ];
     }
 }
