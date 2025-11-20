@@ -1,12 +1,32 @@
 .hozen-table {
-    @apply tw:border tw:border-gray-400;
+    @apply tw:border-separate tw:border-spacing-0 tw:table-fixed;
 }
 
 .hozen-table th,
 .hozen-table td {
-    @apply tw:border tw:border-gray-400 tw:px-[5px] tw:py-[3px];
+    @apply tw:border-0 tw:border-r tw:border-b tw:border-gray-400 tw:px-[5px] tw:py-[3px];
+}
+
+.hozen-table tr:first-child th,
+.hozen-table tr:first-child td {
+    @apply tw:border-solid tw:border-t tw:border-gray-400;
+}
+
+.hozen-table:has(thead) tbody tr:first-child th,
+.hozen-table:has(thead) tbody tr:first-child td {
+    @apply tw:border-t-0;
+}
+
+.hozen-table tr th:first-child,
+.hozen-table tr td:first-child {
+    @apply tw:border-solid tw:border-l tw:border-gray-400;
 }
 
 .hozen-table th {
     @apply tw:bg-pink02 tw:font-normal;
 }
+
+.hozen-table {
+    @apply tw:border-separate tw:border-spacing-0 tw:table-fixed;
+}
+

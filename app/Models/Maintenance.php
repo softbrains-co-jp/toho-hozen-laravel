@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Maintenance extends Model
 {
     protected $table = 'maintenance';
-    //
+
     // タイムスタンプ無効化
     public $timestamps = false;
 
@@ -62,4 +62,9 @@ class Maintenance extends Model
             'gemini_order_date' => 'date:Y/m/d',
             'complete_report_date' => 'date:Y/m/d',
     ];
+
+    public function trader() {
+        return $this->belongsTo('App\Models\MstTrader', 'trader_cd', 'code');
+    }
+
 }

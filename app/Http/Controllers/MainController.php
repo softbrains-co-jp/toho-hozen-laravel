@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 use App\Models\MstBranch;
 use App\Models\MstSetup;
@@ -74,6 +75,7 @@ class MainController extends Controller
 
         $is_exclusion = false;
         $maintenance = new Maintenance();
+        $seika_files = [];
 
         if ($code) {
             $maintenance = Maintenance::where(function($query) use ($code) {
@@ -105,7 +107,11 @@ class MainController extends Controller
                 ]);
             }
 
-            // 時分のフィールドのデータを統一（年月日時分秒や時分のみのデータなどになっている）
+            // 成果物リスト取得
+            $seika_folder = config('hozen.seika_folder_path') . $maintenance->toh_cd;
+            if (is_dir($seika_folder)) {
+                $seika_files = File::files($seika_folder);
+            }
         }
 
         return view('main.index')
@@ -120,6 +126,7 @@ class MainController extends Controller
                 'members',
                 'is_exclusion',
                 'maintenance',
+                'seika_files',
             ));
     }
 
@@ -129,11 +136,7 @@ class MainController extends Controller
         $user = Auth::user();
 
         if ($code) {
-            $maintenance = Maintenance::where(function($query) use ($code) {
-                $query->where('kddi_cd', $code)
-                    ->orWhere('toh_cd', $code);
-            })->first();
-
+            $maintenance = $this->getMaintenace($code);
             if (!$maintenance) {
                 return redirect()->route('main.index')->with('error', "該当の管理番号{$code}はありません。");
             }
@@ -185,5 +188,31 @@ class MainController extends Controller
 
             return redirect()->route('main.index')->with('success', "データを解放しました。");
         }
+    }
+
+    public function download($code, $filename) {
+        $maintenance = $this->getMaintenace($code);
+        if (!$maintenance) {
+            return redirect()->route('main.index')->with('error', "該当の管理番号{$code}はありません。");
+        }
+
+        $filename = basename($filename);
+        $file_path = config('hozen.seika_folder_path') . $maintenance->toh_cd . '/' . $filename;
+        if (!File::exists($file_path)) {
+            return redirect()->route('main.index', ['code' => $code])->with('error', "ファイルが存在しません。");
+        }
+
+        // ダウンロードレスポンスを返す
+        return response()->download($file_path, $filename);
+
+    }
+
+    private function getMaintenace($code) {
+        $maintenance = Maintenance::where(function($query) use ($code) {
+            $query->where('kddi_cd', $code)
+                ->orWhere('toh_cd', $code);
+        })->first();
+
+        return $maintenance;
     }
 }

@@ -42,6 +42,71 @@
                     <x-button.gray type="button" class="tw:w-full">保守管理表</x-button.gray>
                 </a>
             </li>
+            <li class="tw:mt-[3px]">
+                <a href="{{ route('search.index') }}">
+                    <x-button.gray type="button" class="tw:w-full">複合条件検索</x-button.gray>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="tw:mb-5">
+        ■マスタ管理
+        <ul>
+            <li>
+                <a href="{{ route('master.index', ['kind' => 'branch']) }}">
+                    <x-button.gray type="button" class="tw:w-full">支社</x-button.gray>
+                </a>
+            </li>
+            <li class="tw:mt-[3px]">
+                <a href="{{ route('master.index', ['kind' => 'trader']) }}">
+                    <x-button.gray type="button" class="tw:w-full">施工業者</x-button.gray>
+                </a>
+            </li>
+            <li class="tw:mt-[3px]">
+                <a href="{{ route('master.index', ['kind' => 'request']) }}">
+                    <x-button.gray type="button" class="tw:w-full">依頼種別</x-button.gray>
+                </a>
+            </li>
+            <li class="tw:mt-[3px]">
+                <a href="{{ route('master.index', ['kind' => 'status']) }}">
+                    <x-button.gray type="button" class="tw:w-full">工事進捗ステータス</x-button.gray>
+                </a>
+            </li>
+            <li class="tw:mt-[3px]">
+                <a href="{{ route('master.index', ['kind' => 'member']) }}">
+                    <x-button.gray type="button" class="tw:w-full">チェック者</x-button.gray>
+                </a>
+            </li>
+            <li class="tw:mt-[3px]">
+                <a href="{{ route('master.index', ['kind' => 'setup']) }}">
+                    <x-button.gray type="button" class="tw:w-full">移設種別</x-button.gray>
+                </a>
+            </li>
+            <li class="tw:mt-[3px]">
+                <a href="{{ route('master.index', ['kind' => 'road']) }}">
+                    <x-button.gray type="button" class="tw:w-full">道路種別</x-button.gray>
+                </a>
+            </li>
+            <li class="tw:mt-[3px]">
+                <a href="{{ route('master.index', ['kind' => 'apply']) }}">
+                    <x-button.gray type="button" class="tw:w-full">申請種別</x-button.gray>
+                </a>
+            </li>
+            <li class="tw:mt-[3px]">
+                <a href="{{ route('master.index', ['kind' => 'kddi']) }}">
+                    <x-button.gray type="button" class="tw:w-full">KDDI報告種別</x-button.gray>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="tw:mb-5">
+        ■排他処理
+        <ul>
+            <li>
+                <a href="{{ route('exclusion.index') }}">
+                    <x-button.gray type="button" class="tw:w-full">管理番号一覧</x-button.gray>
+                </a>
+            </li>
         </ul>
     </div>
     <div class="tw:mb-5">

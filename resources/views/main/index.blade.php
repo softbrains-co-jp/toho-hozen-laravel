@@ -175,13 +175,13 @@
                     <x-button.gray type="button" class="tw:mr-3" x-on:click="toggleSummaryInfo()" x-bind:class="{ 'tw:text-red-500': showSummaryInfo }">集計情報</x-button.gray>
                     <x-button.gray type="button" class="tw:mr-3" x-on:click="toggleSeikaInfo()" x-bind:class="{ 'tw:text-red-500': showSeikaInfo }">成果物</x-button.gray>
                 </div>
-                <x-main.period-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showPeriodInfo" />
-                <x-main.construction-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showConstructionInfo" />
-                <x-main.stop-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showStopInfo" />
-                <x-main.submission-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showSubmissionInfo" />
-                <x-main.completion-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showCompletionInfo" />
-                <x-main.summary-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showSummaryInfo" />
-                <x-main.seika-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showSeikaInfo" />
+                <x-main.period-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showPeriodInfo" style="display:none;" />
+                <x-main.construction-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showConstructionInfo" style="display:none;" />
+                <x-main.stop-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showStopInfo" style="display:none;" />
+                <x-main.submission-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showSubmissionInfo" style="display:none;" />
+                <x-main.completion-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showCompletionInfo" style="display:none;" />
+                <x-main.summary-info class="tw:mt-[10px]" :maintenance="$maintenance" x-show="showSummaryInfo" style="display:none;" />
+                <x-main.seika-info class="tw:mt-[10px]" :maintenance="$maintenance" :seika_files="$seika_files" x-show="showSeikaInfo" style="display:none;" />
             </div>
             <div class="tw:rows-start-2 tw:rows-end-3 tw:bg-pink01 tw:p-4 tw:flex tw:items-center tw:gap-x-[10px]">
                 <div class="">
@@ -210,6 +210,7 @@
             showSubmissionInfo: false,
             showCompletionInfo: false,
             showSummaryInfo: false,
+            showSeikaInfo: false,
             init() {
                 const form = this.$refs.form;
                 this.initForm = new FormData(form);
@@ -252,6 +253,9 @@
             },
             toggleSummaryInfo() {
                 this.showSummaryInfo = !this.showSummaryInfo;
+            },
+            toggleSeikaInfo() {
+                this.showSeikaInfo = !this.showSeikaInfo;
             },
 
         }
