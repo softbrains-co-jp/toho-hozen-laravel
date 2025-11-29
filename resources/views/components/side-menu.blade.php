@@ -47,6 +47,11 @@
                     <x-button.gray type="button" class="tw:w-full">複合条件検索</x-button.gray>
                 </a>
             </li>
+            <li class="tw:mt-[3px]">
+                <a href="{{ route('import.index') }}">
+                    <x-button.gray type="button" class="tw:w-full">帳票インポート</x-button.gray>
+                </a>
+            </li>
         </ul>
     </div>
     <div class="tw:mb-5">
