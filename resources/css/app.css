@@ -23,5 +23,7 @@
     themes: corporate --default;
 }
 
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
 @import './table.css';
 @import './toastr.css';

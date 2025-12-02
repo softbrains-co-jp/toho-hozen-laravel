@@ -1,6 +1,7 @@
 import './bootstrap';
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
+import '../css/app.css';
 
 // オプション設定（任意）
 toastr.options = {
@@ -12,3 +13,4 @@ toastr.options = {
 
 // Alpineのマジックヘルパーとして登録
 Alpine.magic('toastr', () => toastr);
+

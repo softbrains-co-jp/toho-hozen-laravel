@@ -1,18 +1,23 @@
 <x-app-layout>
     <div class="tw:bg-pink01 tw:min-h-screen tw:p-2 tw:flex tw:flex-col" x-data="deleteForm()">
         <x-page-title>帳票インポート</x-page-title>
-        <div class="tw:border tw:border-b tw:border-gray-400 tw:p-2 tw:mb-[20px] tw:flex tw:justify-center">
-            <div class="tw:w-[60%]">
-                作業日報ファイルリスト
-                <div class="tw:border tw:border-b tw:border-gray-400 tw:p-2 tw:mb-[20px] tw:h-[100px] tw:bg-[#c1edf59e] tw:flex tw:justify-center">
-                    <div class="tw:text-center">
-                        <x-icon.cloud-arrow-up class="tw:w-[50px] tw:text-gray-500"/>
-                        参照
-                    </div>
+        <x-error-message :errors="$errors" />
+        <form method="post" action="{{ route('import.daily-report') }}" class="tw:w-full" enctype="multipart/form-data">
+            @csrf
+            <div class="tw:border tw:border-b tw:border-gray-400 tw:p-2 tw:mb-[20px] tw:flex tw:flex-col tw:items-center tw:py-[20px]">
+                <div class="tw:w-[60%]">
+                    作業日報ファイルリスト
+                    <x-forms.multi-upload
+                        name="daily_reports"
+                        :allowMimeTypes="[
+                            'application/vnd.ms-excel',
+                            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        ]"
+                    />
                 </div>
-                <x-forms.multi-upload />
+                <x-button.blue type="submit" class="tw:mt-[10px]">作業日報取り込み</x-button.blue>
             </div>
-        </div>
+        </form>
     </div>
 </x-app-layout>
 <script>
