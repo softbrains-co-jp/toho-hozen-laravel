@@ -15,7 +15,47 @@
                         ]"
                     />
                 </div>
-                <x-button.blue type="submit" class="tw:mt-[10px]">作業日報取り込み</x-button.blue>
+                @if (session('import_log'))
+                    <x-alert type="info">
+                        @foreach (session('import_log') as $file => $logs)
+                            {{ $file }}
+                            <div class="tw:font-normal tw:pl-[2em]">
+                                @foreach($logs as $log)
+                                    {{ $log }}<br>
+                                @endforeach
+                            </div>
+                        @endforeach
+                    </x-alert>
+                @endif
+                <x-button.blue type="submit" class="tw:mt-[10px]">作業日報取込</x-button.blue>
+            </div>
+        </form>
+        <form method="post" action="{{ route('import.relocation-reception') }}" class="tw:w-full" enctype="multipart/form-data">
+            @csrf
+            <div class="tw:border tw:border-b tw:border-gray-400 tw:p-2 tw:mb-[20px] tw:flex tw:flex-col tw:items-center tw:py-[20px]">
+                <div class="tw:w-[60%]">
+                    移設受付データファイルリスト
+                    <x-forms.multi-upload
+                        name="relocation_receptions"
+                        :allowMimeTypes="[
+                            'application/vnd.ms-excel',
+                            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        ]"
+                    />
+                </div>
+                @if (session('relocationImportLog'))
+                    <x-alert type="info">
+                        @foreach (session('relocationImportLog') as $file => $logs)
+                            {{ $file }}
+                            <div class="tw:font-normal tw:pl-[2em]">
+                                @foreach($logs as $log)
+                                    {{ $log }}<br>
+                                @endforeach
+                            </div>
+                        @endforeach
+                    </x-alert>
+                @endif
+                <x-button.blue type="submit" class="tw:mt-[10px]">移設受付データ取込</x-button.blue>
             </div>
         </form>
     </div>

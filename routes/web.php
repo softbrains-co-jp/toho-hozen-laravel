@@ -35,7 +35,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::prefix('/import')->name('import.')->group(function () {
         Route::get('/', [ImportController::class, 'index'])->name('index');
         Route::post('/daily-report', [ImportController::class, 'importDailyReport'])->name('daily-report');
-        Route::post('/relocation', [ImportController::class, 'importRelocationData'])->name('relocation');
+        Route::post('/relocation-reception', [ImportController::class, 'importRelocationReception'])->name('relocation-reception');
     });
 
     /**
