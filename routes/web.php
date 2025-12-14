@@ -8,6 +8,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\ExclusionController;
 
@@ -36,6 +37,12 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/', [ImportController::class, 'index'])->name('index');
         Route::post('/daily-report', [ImportController::class, 'importDailyReport'])->name('daily-report');
         Route::post('/relocation-reception', [ImportController::class, 'importRelocationReception'])->name('relocation-reception');
+    });
+
+    // 帳票エクスポート
+    Route::prefix('/export')->name('export.')->group(function () {
+        Route::get('/', [ExportController::class, 'index'])->name('index');
+        Route::post('/', [ExportController::class, 'post'])->name('post');
     });
 
     /**

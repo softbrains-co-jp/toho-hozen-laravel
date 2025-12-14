@@ -67,4 +67,8 @@ class Maintenance extends Model
         return $this->belongsTo('App\Models\MstTrader', 'trader_cd', 'code');
     }
 
+    public function branch() {
+        return $this->belongsTo('App\Models\MstBranch', 'branch_cd', 'code');
+    }
+
 }

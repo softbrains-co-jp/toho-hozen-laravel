@@ -10,6 +10,10 @@ class MstUser extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    public const ROLE_USER = 1;
+    public const ROLE_TOHO = 2;
+    public const ROLE_ADMIN = 3;
+
     protected $table = 'mst_users';
 
     protected $fillable = [
