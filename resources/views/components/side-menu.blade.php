@@ -13,7 +13,7 @@
             ログインユーザー
         </div>
         <div class="tw:border tw:border-gray-300 tw:text-center tw:p-1">
-            {{ $user->id }}：{{ $user->name }}
+            {{ $user->login_id }}：{{ $user->name }}
         </div>
     </div>
     <div class="tw:mb-5">
