@@ -121,4 +121,14 @@ class Maintenance extends Model
         return $this->belongsTo(MstRequest::class, 'request_cd', 'code');
     }
 
+    public function setup()
+    {
+        return $this->belongsTo(MstSetup::class, 'setup_cd', 'code');
+    }
+
+    public function apply()
+    {
+        return $this->belongsTo(MstApply::class, 'apply_type', 'code');
+    }
+
 }

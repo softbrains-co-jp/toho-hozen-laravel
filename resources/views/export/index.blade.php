@@ -173,6 +173,9 @@
                                 <th class="tw:w-[200px]">TOH管理番号</th>
                                 <td>
                                     <x-forms.textarea name="export11" rows="6" class="tw:!w-[300px]">{{ old('export11') }}</x-forms.textarea>
+                                    <div>
+                                        ※改行区切りで指定
+                                    </div>
                                 </td>
                             </tr>
                             <tr>

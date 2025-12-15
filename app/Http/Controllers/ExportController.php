@@ -20,6 +20,12 @@ use App\Services\Export\NippouKddiService;
 use App\Services\Export\ShunkouListService;
 use App\Services\Export\CheckListService;
 use App\Services\Export\IsetsuListService;
+use App\Services\Export\SeisanListService;
+use App\Services\Export\ShinseiListService;
+use App\Services\Export\MishunkouListService;
+use App\Services\Export\ToshoListService;
+use App\Services\Export\CheckmidListService;
+use App\Services\Export\SeikabutsuListService;
 
 class ExportController extends Controller
 {
@@ -47,7 +53,13 @@ class ExportController extends Controller
         NippouKddiService $nippouKddiService,
         ShunkouListService $shunkouListService,
         CheckListService $checkListService,
-        IsetsuListService $isetsuListService
+        IsetsuListService $isetsuListService,
+        SeisanListService $seisanListService,
+        ShinseiListService $shinseiListService,
+        MishunkouListService $mishunkouListService,
+        ToshoListService $toshoListService,
+        CheckmidListService $checkmidListService,
+        SeikabutsuListService $seikabutsuListService,
     ) {
         // ログインユーザ
         $user = Auth::user();
@@ -119,6 +131,56 @@ class ExportController extends Controller
                 $fileName = '【TOH】移設工事報告リスト_' . date('Ymd', strtotime($date)) . '.xlsx';
 
                 return $this->exportExcel($fileName, $spreadsheet, 'Xlsx');
+                break;
+            case 'export08_1':      // 精算月件数確認リスト
+                $date = $request->input('export08');
+
+                $spreadsheet = $seisanListService->makeExcel($date);
+                $fileName = '精算月件数確認リスト_' . date('Ymd') . '.xls';
+
+                return $this->exportExcel($fileName, $spreadsheet);
+                break;
+            case 'export08_2':      // 申請状況確認リスト
+                $date = $request->input('export08');
+
+                $spreadsheet = $shinseiListService->makeExcel($date);
+                $fileName = '申請状況確認リスト_' . date('Ymd') . '.xls';
+
+                return $this->exportExcel($fileName, $spreadsheet);
+                break;
+            case 'export09_1':      // 未竣工状況確認リスト
+                $from = $request->input('export09_from');
+                $to = $request->input('export09_to');
+
+                $spreadsheet = $mishunkouListService->makeExcel($from, $to);
+                $fileName = '未竣工状況確認リスト_' . date('Ymd') . '.xls';
+
+                return $this->exportExcel($fileName, $spreadsheet);
+                break;
+            case 'export09_2':      // 追加・解除申請図書受領確認リスト
+                $from = $request->input('export09_from');
+                $to = $request->input('export09_to');
+
+                $spreadsheet = $toshoListService->makeExcel($from, $to);
+                $fileName = '追加・解除申請図書受領確認リスト_' . date('Ymd') . '.xls';
+
+                return $this->exportExcel($fileName, $spreadsheet);
+                break;
+            case 'export10':      // チェック者確認リスト
+                $checkMcd = $request->input('export10');
+
+                $spreadsheet = $checkmidListService->makeExcel($checkMcd);
+                $fileName = 'チェック者確認リスト_' . date('Ymd') . '.xls';
+
+                return $this->exportExcel($fileName, $spreadsheet);
+                break;
+            case 'export11':      // 竣工成果物受領管理リスト
+                $toh_cd = $request->input('export11');
+
+                $spreadsheet = $seikabutsuListService->makeExcel(preg_split("/\r\n|\r|\n/", $toh_cd));
+                $fileName = '竣工成果物受領管理リスト_' . date('Ymd') . '.xls';
+
+                return $this->exportExcel($fileName, $spreadsheet);
                 break;
         }
     }
