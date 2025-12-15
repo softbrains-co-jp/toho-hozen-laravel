@@ -27,13 +27,13 @@
                     停止予定日
                 </th>
                 <td>
-                    <x-forms.input type="date" name="stop_plan_date" value="{{ old('stop_plan_date', $maintenance->stop_plan_date?->format('Y-m-d')) }}" class="tw:!w-[200px]" />
+                    <x-forms.input-date name="stop_plan_date" :value="old('stop_plan_date', $maintenance->stop_plan_date)" class="tw:!w-[200px]" />
                 </td>
                 <th class="tw:w-[15%]">
                     停止実施日
                 </th>
                 <td>
-                    <x-forms.input type="date" name="stop_action_date" value="{{ old('stop_action_date', $maintenance->stop_action_date?->format('Y-m-d')) }}" class="tw:!w-[200px]" />
+                    <x-forms.input-date name="stop_action_date" :value="old('stop_action_date', $maintenance->stop_action_date)" class="tw:!w-[200px]" />
                 </td>
             </tr>
             <tr>
@@ -42,6 +42,7 @@
                 </th>
                 <td>
                     <x-forms.input type="text" name="mc_pole_cd" value="{{ old('mc_pole_cd', $maintenance->mc_pole_cd) }}" class="tw:!w-[200px]" />
+                    <x-forms.input-date name="stop_action_date" :value="old('stop_action_date', $maintenance->stop_action_date)" class="tw:!w-[200px]" />
                 </td>
                 <th class="tw:w-[15%]">
                     マルチM/C開閉有無

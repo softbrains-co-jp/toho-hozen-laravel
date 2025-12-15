@@ -131,7 +131,7 @@
                                 チェック日
                             </th>
                             <td>
-                                <x-forms.input type="date" id="check_date" name="check_date" value="{{ old('check_date', $maintenance->check_date?->format('Y-m-d')) }}" class="tw:!w-[200px]" />
+                                <x-forms.input-date name="check_date" :value="old('check_date', $maintenance->check_date?->format('Y/m/d'))" class="tw:!w-[200px]" />
                             </td>
                             <th class="tw:w-[15%]">
                                 チェック者

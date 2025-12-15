@@ -16,19 +16,19 @@
                     調査報告書受領日
                 </th>
                 <td>
-                    <x-forms.input type="date" name="conduct_receive_date" value="{{ old('conduct_receive_date', $maintenance->conduct_receive_date?->format('Y-m-d')) }}" class="tw:!w-[200px]" />
+                    <x-forms.input-date name="conduct_receive_date" :value="old('conduct_receive_date', $maintenance->conduct_receive_date?->format('Y/m/d'))" class="tw:!w-[200px]" />
                 </td>
                 <th class="tw:w-[15%]">
                     仮工事報告書受領日
                 </th>
                 <td>
-                    <x-forms.input type="date" name="t_work_receive_date" value="{{ old('t_work_receive_date', $maintenance->t_work_receive_date?->format('Y-m-d')) }}" class="tw:!w-[200px]" />
+                    <x-forms.input-date name="t_work_receive_date" :value="old('t_work_receive_date', $maintenance->t_work_receive_date?->format('Y/m/d'))" class="tw:!w-[200px]" />
                 </td>
                 <th class="tw:w-[15%]">
                     竣工図書受領日
                 </th>
                 <td>
-                    <x-forms.input type="date" name="complete_design_receive_date" value="{{ old('complete_design_receive_date', $maintenance->complete_design_receive_date?->format('Y-m-d')) }}" class="tw:!w-[200px]" />
+                    <x-forms.input-date name="complete_design_receive_date" :value="old('complete_design_receive_date', $maintenance->complete_design_receive_date?->format('Y/m/d'))" class="tw:!w-[200px]" />
                 </td>
             </tr>
             <tr>
@@ -36,13 +36,13 @@
                     電線設備変更依頼書送信日
                 </th>
                 <td>
-                    <x-forms.input type="date" name="wire_change_order_date" value="{{ old('wire_change_order_date', $maintenance->wire_change_order_date?->format('Y-m-d')) }}" class="tw:!w-[200px]" />
+                    <x-forms.input-date name="wire_change_order_date" :value="old('wire_change_order_date', $maintenance->wire_change_order_date)" class="tw:!w-[200px]" />
                 </td>
                 <th class="tw:w-[15%]">
                     GEMINI修正依頼日
                 </th>
                 <td colspan="3">
-                    <x-forms.input type="date" name="gemini_order_date" value="{{ old('gemini_order_date', $maintenance->gemini_order_date?->format('Y-m-d')) }}" class="tw:!w-[200px]" />
+                    <x-forms.input-date name="gemini_order_date" :value="old('gemini_order_date', $maintenance->gemini_order_date)" class="tw:!w-[200px]" />
                 </td>
             </tr>
             <tr>
@@ -50,7 +50,7 @@
                     竣工報告日
                 </th>
                 <td>
-                    <x-forms.input type="date" name="complete_report_date" value="{{ old('complete_report_date', $maintenance->complete_report_date?->format('Y-m-d')) }}" class="tw:!w-[200px]" />
+                    <x-forms.input-date name="complete_report_date" :value="old('complete_report_date', $maintenance->complete_report_date)" class="tw:!w-[200px]" />
                 </td>
                 <th class="tw:w-[15%]">
                     竣工処理待ち

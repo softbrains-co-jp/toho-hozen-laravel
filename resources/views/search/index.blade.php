@@ -53,9 +53,9 @@
                     <tr>
                         <th>チェック日</th>
                         <td>
-                            <x-forms.input type="date" name="check_date_from" value="{{ $condition['check_date_from'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="check_date_from" :value="$condition['check_date_from'] ?? ''" class="tw:!w-[120px]" />
                             〜
-                            <x-forms.input type="date" name="check_date_to" value="{{ $condition['check_date_to'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="check_date_to" :value="$condition['check_date_to'] ?? ''" class="tw:!w-[120px]" />
                         </td>
                         <th>チェック者</th>
                         <td>
@@ -65,79 +65,79 @@
                     <tr>
                         <th>本工期（自）</th>
                         <td>
-                            <x-forms.input type="date" name="term_start_date_from" value="{{ $condition['term_start_date_from'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="term_start_date_from" :value="$condition['term_start_date_from'] ?? ''" class="tw:!w-[120px]" />
                             〜
-                            <x-forms.input type="date" name="term_start_date_to" value="{{ $condition['term_start_date_to'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="term_start_date_to" :value="$condition['term_start_date_to'] ?? ''" class="tw:!w-[120px]" />
                         </td>
                         <th>本工期（至）</th>
                         <td>
-                            <x-forms.input type="date" name="term_end_date_from" value="{{ $condition['term_end_date_from'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="term_end_date_from" :value="$condition['term_end_date_from'] ?? ''" class="tw:!w-[120px]" />
                             〜
-                            <x-forms.input type="date" name="term_end_date_to" value="{{ $condition['term_end_date_to'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="term_end_date_to" :value="$condition['term_end_date_to'] ?? ''" class="tw:!w-[120px]" />
                         </td>
                     </tr>
                     <tr>
                         <th>本工期（自）変更後</th>
                         <td>
-                            <x-forms.input type="date" name="term2_start_date_from" value="{{ $condition['term2_start_date_from'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="term2_start_date_from" :value="$condition['term2_start_date_from'] ?? ''" class="tw:!w-[120px]" />
                             〜
-                            <x-forms.input type="date" name="term2_start_date_to" value="{{ $condition['term2_start_date_to'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="term2_start_date_to" :value="$condition['term2_start_date_to'] ?? ''" class="tw:!w-[120px]" />
                         </td>
                         <th>本工期（至）変更後</th>
                         <td>
-                            <x-forms.input type="date" name="term2_end_date_from" value="{{ $condition['term2_end_date_from'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="term2_end_date_from" :value="$condition['term2_end_date_from'] ?? ''" class="tw:!w-[120px]" />
                             〜
-                            <x-forms.input type="date" name="term2_end_date_to" value="{{ $condition['term2_end_date_to'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="term2_end_date_to" :value="$condition['term2_end_date_to'] ?? ''" class="tw:!w-[120px]" />
                         </td>
                     </tr>
                     <tr>
                         <th>仮工期（自）</th>
                         <td>
-                            <x-forms.input type="date" name="t_term_start_date_from" value="{{ $condition['t_term_start_date_from'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="t_term_start_date_from" :value="$condition['t_term_start_date_from'] ?? ''" class="tw:!w-[120px]" />
                             〜
-                            <x-forms.input type="date" name="t_term_start_date_to" value="{{ $condition['t_term_start_date_to'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="t_term_start_date_to" :value="$condition['t_term_start_date_to'] ?? ''" class="tw:!w-[120px]" />
                         </td>
                         <th>仮工期（至）</th>
                         <td>
-                            <x-forms.input type="date" name="t_term_end_date_from" value="{{ $condition['t_term_end_date_from'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="t_term_end_date_from" :value="$condition['t_term_end_date_from'] ?? ''" class="tw:!w-[120px]" />
                             〜
-                            <x-forms.input type="date" name="t_term_end_date_to" value="{{ $condition['t_term_end_date_to'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="t_term_end_date_to" :value="$condition['t_term_end_date_to'] ?? ''" class="tw:!w-[120px]" />
                         </td>
                     </tr>
                     <tr>
                         <th>仮工期（自）変更後</th>
                         <td>
-                            <x-forms.input type="date" name="t_term2_start_date_from" value="{{ $condition['t_term2_start_date_from'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="t_term2_start_date_from" :value="$condition['t_term2_start_date_from'] ?? ''" class="tw:!w-[120px]" />
                             〜
-                            <x-forms.input type="date" name="t_term2_start_date_to" value="{{ $condition['t_term2_start_date_to'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="t_term2_start_date_to" :value="$condition['t_term2_start_date_to'] ?? ''" class="tw:!w-[120px]" />
                         </td>
                         <th>仮工期（至）変更後</th>
                         <td>
-                            <x-forms.input type="date" name="t_term2_end_date_from" value="{{ $condition['t_term2_end_date_from'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="t_term2_end_date_from" :value="$condition['t_term2_end_date_from'] ?? ''" class="tw:!w-[120px]" />
                             〜
-                            <x-forms.input type="date" name="t_term2_end_date_to" value="{{ $condition['t_term2_end_date_to'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="t_term2_end_date_to" :value="$condition['t_term2_end_date_to'] ?? ''" class="tw:!w-[120px]" />
                         </td>
                     </tr>
                     <tr>
                         <th>KDDI依頼日</th>
                         <td>
-                            <x-forms.input type="date" name="kddi_oder_date_from" value="{{ $condition['kddi_oder_date_from'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="kddi_oder_date_from" :value="$condition['kddi_oder_date_from'] ?? ''" class="tw:!w-[120px]" />
                             〜
-                            <x-forms.input type="date" name="kddi_oder_date_to" value="{{ $condition['kddi_oder_date_to'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="kddi_oder_date_to" :value="$condition['kddi_oder_date_to'] ?? ''" class="tw:!w-[120px]" />
                         </td>
                         <th>工事付託日</th>
                         <td>
-                            <x-forms.input type="date" name="commit_date_from" value="{{ $condition['commit_date_from'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="commit_date_from" :value="$condition['commit_date_from'] ?? ''" class="tw:!w-[120px]" />
                             〜
-                            <x-forms.input type="date" name="commit_date_to" value="{{ $condition['commit_date_to'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="commit_date_to" :value="$condition['commit_date_to'] ?? ''" class="tw:!w-[120px]" />
                         </td>
                     </tr>
                     <tr>
                         <th>調査付託日</th>
                         <td colspan="3">
-                            <x-forms.input type="date" name="conduct_commit_date_from" value="{{ $condition['conduct_commit_date_from'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="conduct_commit_date_from" :value="$condition['conduct_commit_date_from'] ?? ''" class="tw:!w-[120px]" />
                             〜
-                            <x-forms.input type="date" name="conduct_commit_date_to" value="{{ $condition['conduct_commit_date_to'] ?? '' }}" class="tw:!w-[120px]" />
+                            <x-forms.input-date name="conduct_commit_date_to" :value="$condition['conduct_commit_date_to'] ?? ''" class="tw:!w-[120px]" />
                         </td>
                     </tr>
                 </tbody>

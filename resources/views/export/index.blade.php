@@ -11,9 +11,9 @@
                             <tr>
                                 <th class="tw:w-[200px]">付託日</th>
                                 <td>
-                                    <x-forms.input type="date" name="export01_from" value="{{ old('export01_from') }}" class="tw:!w-[150px]" />
+                                    <x-forms.input-date name="export01_from" :value="old('export01_from')" class="tw:!w-[150px]" />
                                     〜
-                                    <x-forms.input type="date" name="export01_to" value="{{ old('export01_to') }}" class="tw:!w-[150px]" />
+                                    <x-forms.input-date name="export01_to" :value="old('export01_to')" class="tw:!w-[150px]" />
                                 </td>
                             </tr>
                             <tr>
@@ -28,7 +28,7 @@
                             <tr>
                                 <th class="tw:w-[200px]">保守作業報告日</th>
                                 <td>
-                                    <x-forms.input type="date" name="export02" value="{{ old('export02') }}" class="tw:!w-[150px]" />
+                                    <x-forms.input-date name="export02" :value="old('export02')" class="tw:!w-[150px]" />
                                 </td>
                             </tr>
                             <tr>
@@ -46,9 +46,9 @@
                             <tr>
                                 <th class="tw:w-[200px]">期限</th>
                                 <td>
-                                    <x-forms.input type="date" name="export03_from" value="{{ old('export03_from') }}" class="tw:!w-[150px]" />
+                                    <x-forms.input-date name="export03_from" :value="old('export03_from')" class="tw:!w-[150px]" />
                                     〜
-                                    <x-forms.input type="date" name="export03_to" value="{{ old('export03_to') }}" class="tw:!w-[150px]" />
+                                    <x-forms.input-date name="export03_to" :value="old('export03_to')" class="tw:!w-[150px]" />
                                 </td>
                             </tr>
                             <tr>
@@ -63,7 +63,7 @@
                             <tr>
                                 <th class="tw:w-[200px]">作業日報報告日</th>
                                 <td>
-                                    <x-forms.input type="date" name="export04" value="{{ old('export04') }}" class="tw:!w-[150px]" />
+                                    <x-forms.input-date name="export04" :value="old('export04')" class="tw:!w-[150px]" />
                                 </td>
                             </tr>
                             <tr>
@@ -87,7 +87,7 @@
                             <tr>
                                 <th class="tw:w-[200px]">チェック日</th>
                                 <td>
-                                    <x-forms.input type="date" name="export06" value="{{ old('export06') }}" class="tw:!w-[150px]" />
+                                    <x-forms.input-date name="export06" :value="old('export06')" class="tw:!w-[150px]" />
                                 </td>
                             </tr>
                             <tr>
@@ -102,7 +102,7 @@
                             <tr>
                                 <th class="tw:w-[200px]">予定日</th>
                                 <td>
-                                    <x-forms.input type="date" name="export07" :value="now()->format('Y-m-d')" class="tw:!w-[150px]" />
+                                    <x-forms.input-date name="export07" :value="now()->format('Y/m/d')" class="tw:!w-[150px]" />
                                 </td>
                             </tr>
                             <tr>
@@ -137,9 +137,9 @@
                             <tr>
                                 <th class="tw:w-[200px]">KDDI依頼日</th>
                                 <td>
-                                    <x-forms.input type="date" name="export09_from" value="{{ old('export09_from') }}" class="tw:!w-[150px]" />
+                                    <x-forms.input-date name="export09_from" :value="old('export09_from')" class="tw:!w-[150px]" />
                                     〜
-                                    <x-forms.input type="date" name="export09_to" value="{{ old('export09_to') }}" class="tw:!w-[150px]" />
+                                    <x-forms.input-date name="export09_to" :value="old('export09_to')" class="tw:!w-[150px]" />
                                 </td>
                             </tr>
                             <tr>
