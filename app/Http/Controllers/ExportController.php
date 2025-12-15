@@ -12,6 +12,14 @@ use App\Models\MstMember;
 use App\Models\Maintenance;
 use App\Models\MstBranch;
 use App\Models\MstUser;
+use App\Services\Export\FutakuListService;
+use App\Services\Export\SagyouService;
+use App\Services\Export\LocationService;
+use App\Services\Export\ChokkinListService;
+use App\Services\Export\NippouKddiService;
+use App\Services\Export\ShunkouListService;
+use App\Services\Export\CheckListService;
+use App\Services\Export\IsetsuListService;
 
 class ExportController extends Controller
 {
@@ -30,73 +38,99 @@ class ExportController extends Controller
             ));
     }
 
-    public function post(ExportRequest $request) {
-        $action = $request->input('action');
-
-        switch ($action) {
-            case 'export01':
-                return  $this->exportFutakuList($request->input('export01_from'), $request->input('export01_to'));
-                break;
-        }
-
-
-    }
-
-    protected function exportFutakuList($from, $to) {
+    public function post(
+        ExportRequest $request,
+        FutakuListService $futakuListService,
+        SagyouService $sagyouService,
+        LocationService $locationService,
+        ChokkinListService $chokkinListService,
+        NippouKddiService $nippouKddiService,
+        ShunkouListService $shunkouListService,
+        CheckListService $checkListService,
+        IsetsuListService $isetsuListService
+    ) {
         // ログインユーザ
         $user = Auth::user();
 
-        // Excel 読み込み（Excel95 = Xls）
-        $spreadsheet = IOFactory::load(resource_path('excel/template/futaku-list.xls'));
-        $sheet = $spreadsheet->getActiveSheet();
+        $action = $request->input('action');
+        switch ($action) {
+            case 'export01':        // 付託リスト
+                $from = $request->input('export01_from');
+                $to = $request->input('export01_to');
 
-        // セルに日付セット
-        $sheet->setCellValue('C4', date('Y/m/d', strtotime($from)));
-        $sheet->setCellValue('D4', date('Y/m/d', strtotime($to)));
+                $spreadsheet = $futakuListService->makeExcel($from, $to, $user);
+                $fileName = '付託リスト_' . date('Ymd') . '.xls';
 
-        $maintenances = Maintenance::with([
-                'branch',
-                'trader'
-            ])
-            ->where(function ($q) use ($from, $to) {
-                $q->whereBetween('conduct_commit_date', [$from, $to])
-                ->orWhereBetween('commit_date', [$from, $to]);
-            })
-            ->when($user->role == MstUser::ROLE_USER, function ($q) use ($user) {
-                $q->where('trader_cd', substr($user->login_id, 0, 3));
-            })
-            ->orderBy('toh_cd')
-            ->get();
+                return $this->exportExcel($fileName, $spreadsheet);
+                break;
+            case 'export02_1':      // 保守作業報告
+                $date = $request->input('export02');
 
-        $rowNo = 6;
+                $spreadsheet = $sagyouService->makeExcel($date);
+                $fileName = date('Ymd', strtotime($date)) . '_保守作業報告表.xls';
 
-        foreach ($maintenances as $maintenance) {
-            $sheet->setCellValueByColumnAndRow(2, $rowNo, $maintenance->kddi_cd);
-            $sheet->setCellValueByColumnAndRow(3, $rowNo, $maintenance->conduct_commit_date?->format('Y/m/d'));
-            $sheet->setCellValueByColumnAndRow(4, $rowNo, $maintenance->commit_date?->format('Y/m/d'));
-            $sheet->setCellValueByColumnAndRow(
-                5,
-                $rowNo,
-                $maintenance->trader?->name
-            );
-            $sheet->setCellValueByColumnAndRow(
-                6,
-                $rowNo,
-                $maintenance->branch?->name
-            );
+                return $this->exportExcel($fileName, $spreadsheet);
+                break;
+            case 'export02_2':      // 位置情報用
+                $date = $request->input('export02');
 
-            $rowNo++;
+                $txtData = $locationService->makeTxt($date);
+                $fileName = date('Ymd', strtotime($date)) . '_位置情報.txt';
+
+                return response($txtData)
+                    ->header('Content-Type', 'application/octet-stream')
+                    ->header('Content-Disposition', 'attachment; filename="'.$fileName.'"');
+                break;
+            case 'export03':        // 直近工期リスト
+                $from = $request->input('export03_from');
+                $to = $request->input('export03_to');
+
+                $spreadsheet = $chokkinListService->makeExcel($from, $to, $user);
+                $fileName = date('Ymd') . '_直近工期リスト.xls';
+
+                return $this->exportExcel($fileName, $spreadsheet);
+                break;
+            case 'export04':      // 作業日報（KDDI提出用）
+                $date = $request->input('export04');
+
+                $spreadsheet = $nippouKddiService->makeExcel($date);
+                $fileName = date('Ymd') . '_作業日報（KDDI提出用）.xls';
+
+                return $this->exportExcel($fileName, $spreadsheet);
+                break;
+            case 'export05':      // 竣工成果物遅延リスト
+                $spreadsheet = $shunkouListService->makeExcel();
+                $fileName = '竣工成果物遅延リスト' . date('Ymd') . '.xls';
+
+                return $this->exportExcel($fileName, $spreadsheet);
+                break;
+            case 'export06':      // チェック日リスト
+                $date = $request->input('export06');
+
+                $spreadsheet = $checkListService->makeExcel($date);
+                $fileName = 'チェック日リスト.xls';
+
+                return $this->exportExcel($fileName, $spreadsheet);
+                break;
+            case 'export07':      // 保守工事報告リスト
+                $date = $request->input('export07');
+
+                $spreadsheet = $isetsuListService->makeExcel($date);
+                $fileName = '【TOH】移設工事報告リスト_' . date('Ymd', strtotime($date)) . '.xlsx';
+
+                return $this->exportExcel($fileName, $spreadsheet, 'Xlsx');
+                break;
         }
+    }
 
-        // 一時ファイル保存
-        $fileName = '付託リスト_' . date('Ymd') . '.xls';
+    protected function exportExcel($fileName, $spreadsheet, $type = 'Xls') {
         $tempPath = storage_path('app/' . $fileName);
 
-        $writer = IOFactory::createWriter($spreadsheet, 'Xls');
+        $writer = IOFactory::createWriter($spreadsheet, $type);
         $writer->save($tempPath);
 
-        // ダウンロードレスポンス
-        return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
-
+        return response()
+            ->download($tempPath, $fileName)
+            ->deleteFileAfterSend(true);
     }
 }

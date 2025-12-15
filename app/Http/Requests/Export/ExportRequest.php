@@ -21,7 +21,7 @@ class ExportRequest extends FormRequest
      */
     public function rules(): array
     {
-        $code = $this->input('key_cd');
+        // dd($this->input('action'));
 
         return [
             'action' => [
@@ -29,11 +29,44 @@ class ExportRequest extends FormRequest
                 'string'
             ],
             'export01_from' => [
+                'nullable',
                 'required_if:action,export01',
                 'date',
             ],
             'export01_to' => [
+                'nullable',
                 'required_if:action,export01',
+                'date',
+            ],
+            'export02' => [
+                'nullable',
+                'required_if:action,export02_1',
+                'required_if:action,export02_2',
+                'date',
+            ],
+            'export03_from' => [
+                'nullable',
+                'required_if:action,export03',
+                'date',
+            ],
+            'export03_to' => [
+                'nullable',
+                'required_if:action,export03',
+                'date',
+            ],
+            'export04' => [
+                'nullable',
+                'required_if:action,export04',
+                'date',
+            ],
+            'export06' => [
+                'nullable',
+                'required_if:action,export06',
+                'date',
+            ],
+            'export07' => [
+                'nullable',
+                'required_if:action,export07',
                 'date',
             ],
         ];
@@ -43,6 +76,13 @@ class ExportRequest extends FormRequest
         return [
             'export01_from' => '付託日(From)',
             'export01_to' => '付託日(To)',
+            'export02' => '保守作業報告日',
+            'export03_from' => '期限(From)',
+            'export03_to' => '期限(To)',
+            'export04' => '作業日報報告日',
+            'export06' => 'チェック日',
+            'export07' => '予定日',
+
             'check_date' => 'チェック日',
             't_term_start_date' => '仮工期（自）',
             't_term_end_date' => '仮工期（至）',
@@ -90,6 +130,12 @@ class ExportRequest extends FormRequest
         return [
             'export01_from.required_if' => ':attributeを入力してください。',
             'export01_to.required_if' => ':attributeを入力してください。',
+            'export02.required_if' => ':attributeを入力してください。',
+            'export03_from.required_if' => ':attributeを入力してください。',
+            'export03_to.required_if' => ':attributeを入力してください。',
+            'export04.required_if' => ':attributeを入力してください。',
+            'export06.required_if' => ':attributeを入力してください。',
+            'export07.required_if' => ':attributeを入力してください。',
         ];
     }
 }

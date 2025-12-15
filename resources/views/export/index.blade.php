@@ -102,7 +102,7 @@
                             <tr>
                                 <th class="tw:w-[200px]">予定日</th>
                                 <td>
-                                    <x-forms.input type="date" name="export07" value="{{ old('export07') }}" class="tw:!w-[150px]" />
+                                    <x-forms.input type="date" name="export07" :value="now()->format('Y-m-d')" class="tw:!w-[150px]" />
                                 </td>
                             </tr>
                             <tr>

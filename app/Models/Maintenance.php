@@ -71,4 +71,54 @@ class Maintenance extends Model
         return $this->belongsTo('App\Models\MstBranch', 'branch_cd', 'code');
     }
 
+    public function kddiReportType()
+    {
+        return $this->belongsTo(MstKddiReport::class, 'kddi_report_type', 'code');
+    }
+
+    public function conductStartMember()
+    {
+        return $this->belongsTo(MstMember::class, 'conduct_start_mcd', 'code');
+    }
+
+    public function conductEndMember()
+    {
+        return $this->belongsTo(MstMember::class, 'conduct_end_mcd', 'code');
+    }
+
+    public function tSetupStartMember()
+    {
+        return $this->belongsTo(MstMember::class, 't_setup_start_mcd', 'code');
+    }
+
+    public function tSetupFinishMember()
+    {
+        return $this->belongsTo(MstMember::class, 't_setup_finish_mcd', 'code');
+    }
+
+    public function setupStartMember()
+    {
+        return $this->belongsTo(MstMember::class, 'setup_start_mcd', 'code');
+    }
+
+    public function setupFinishMember()
+    {
+        return $this->belongsTo(MstMember::class, 'setup_finish_mcd', 'code');
+    }
+
+    public function checkMember()
+    {
+        return $this->belongsTo(MstMember::class, 'check_mcd', 'code');
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(MstStatus::class, 'status_cd', 'code');
+    }
+
+    public function request()
+    {
+        return $this->belongsTo(MstRequest::class, 'request_cd', 'code');
+    }
+
 }
