@@ -77,6 +77,10 @@ class MainController extends Controller
         $maintenance = new Maintenance();
         $seika_files = [];
 
+        if (session('exclusion_toh_cd') && $code == null) {
+            return redirect()->route('main.index', ['code' => session('exclusion_toh_cd')]);
+        }
+
         if ($code) {
             $maintenance = Maintenance::where(function($query) use ($code) {
                 $query->where('kddi_cd', $code)
@@ -105,6 +109,8 @@ class MainController extends Controller
                     'add_datetime' => now(),
                     'edit_datetime' => now(),
                 ]);
+
+                session(['exclusion_toh_cd' => $maintenance->toh_cd]);
             }
 
             // 成果物リスト取得
@@ -185,6 +191,8 @@ class MainController extends Controller
 
             Exclusion::where('login_id', $user->login_id)
                 ->delete();
+
+            session()->forget('exclusion_toh_cd');
 
             return redirect()->route('main.index')->with('success', "データを解放しました。");
         }

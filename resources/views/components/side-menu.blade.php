@@ -21,10 +21,10 @@
             TOH管理番号
         </div>
         <div class="tw:border tw:border-gray-300 tw:text-center tw:p-1 tw:text-red-500">
-            {{ $code }}
+            {{ session('exclusion_toh_cd') }}
         </div>
-        @if ($code)
-            <form method="post" action="{{ route('main.release', ['code' => $code]) }}">
+        @if (session('exclusion_toh_cd'))
+            <form method="post" action="{{ route('main.release', ['code' => session('exclusion_toh_cd')]) }}">
                 <div class="tw:border tw:border-gray-300 tw:text-center tw:p-1">
                     @csrf
                     @method('PATCH')
