@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Maintenance extends Model
 {
+    public const TIME_CDS = [
+        'AM' => '午前',
+        'PM' => '午後',
+        'AP' => '終日',
+    ];
+
     protected $table = 'maintenance';
 
     // タイムスタンプ無効化
