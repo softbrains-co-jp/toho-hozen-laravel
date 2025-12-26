@@ -58,7 +58,7 @@
                 </a>
             </li>
             <li class="tw:mt-[3px]">
-                <a href="{{ route('maintenance-report.index') }}">
+                <a href="{{ route('report.index') }}">
                     <x-button.gray type="button" class="tw:w-full">工事進捗</x-button.gray>
                 </a>
             </li>

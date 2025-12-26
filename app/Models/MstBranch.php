@@ -8,8 +8,6 @@ class MstBranch extends Model
 {
     protected $table = 'mst_branch';
 
-    protected $primaryKey = 'id';
-
     protected $guarded = [
         'id',
     ];

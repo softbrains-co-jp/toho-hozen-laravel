@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="tw:bg-pink01 tw:min-h-screen tw:p-2 tw:flex tw:flex-col" x-data="deleteForm()">
         <x-page-title>保守作業報告表</x-page-title>
-        <form method="get" action="{{ route('maintenance-report.index') }}">
+        <form method="get" action="{{ route('report.index') }}">
             <table class="hozen-table tw:w-full">
                 <colgroup>
                     <col class="tw:w-[200px]">
@@ -25,7 +25,7 @@
                         <td>
                             <x-forms.select name="construction_content" value="{{ $condition['construction_content'] ?? '' }}" empty=" " :options="$construction_content_options" />
                         </td>
-                        <th>現場住所</th>
+                        <th>進捗詳細</th>
                         <td>
                             <x-forms.select name="progress_detail" value="{{ $condition['progress_detail'] ?? '' }}" empty=" " :options="$progress_detail_options" />
                         </td>
@@ -37,8 +37,12 @@
             </div>
         </form>
         <div class="tw:mt-[20px]">
-            <form method="post" action="{{ route('maintenance-report.post') }}">
+            <x-error-message :errors="$errors" />
+            <form method="post" action="{{ route('report.post', request()->query()) }}">
                 @csrf
+                <div class="tw:mb-2">
+                    <x-button.gray type="submit">進捗更新</x-button.gray>
+                </div>
                 <table class="hozen-table tw:w-full">
                     <colgroup>
                         <col class="tw:w-[80px]">
@@ -58,8 +62,8 @@
                             <th>No.</th>
                             <th>管理番号</th>
                             <th>工事内容</th>
-                            <th>作業員名</th>
                             <th>作業実施班</th>
+                            <th>作業員名</th>
                             <th>支社</th>
                             <th>進捗詳細</th>
                             <th colspan="2">開始</th>
@@ -70,16 +74,21 @@
                         @foreach($list as $row)
                             <tr>
                                 <td>{{ $row['no'] }}</td>
-                                <td>{{ $row['kddi_cd'] }}</td>
+                                <td>
+                                    <a href="{{ route('main.index', ['code' => $row['kddi_cd']]) }}" class="tw:underline">
+                                        {{ $row['kddi_cd'] }}
+                                    </a>
+                                </td>
                                 <td>{{ $row['construction_content'] }}</td>
                                 <td>{{ $row['trader_name'] }}</td>
                                 <td>{{ $row['member_name'] }}</td>
                                 <td>{{ $row['branch_name'] }}</td>
                                 <td>
-                                    <input type="hidden" name="maintenances[]['toh_cd']" value="{{ $row['toh_cd'] }}" />
-                                    <input type="hidden" name="maintenances[]['construction_content']" value="{{ $row['construction_content'] }}" />
-                                    <x-forms.select name="maintenances[]['status']" value="" :options="$status_options" />
+                                    <x-forms.select name="maintenances[{{ $row['no'] }}][progress_detail]" :value="$row['progress_detail']" :options="$progress_detail_options" />
                                     {{ App\Models\Maintenance::TIME_CDS[$row['time_cd']] ?? '' }}
+                                    <input type="hidden" name="maintenances[{{ $row['no'] }}][toh_cd]" value="{{ $row['toh_cd'] }}" />
+                                    <input type="hidden" name="maintenances[{{ $row['no'] }}][construction_content]" value="{{ $row['construction_content'] }}" />
+                                    <input type="hidden" name="maintenances[{{ $row['no'] }}][old_progress_detail]" value="{{ $row['progress_detail'] }}" />
                                 </td>
                                 <td>{{ $row['start_time'] }}</td>
                                 <td>{{ $row['start_member'] }}</td>

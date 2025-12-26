@@ -11,7 +11,7 @@ use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\ExclusionController;
-use App\Http\Controllers\MaintenanceReportController;
+use App\Http\Controllers\ReportController;
 
 Route::group(['middleware' => 'auth'], function() {
     /**
@@ -47,9 +47,9 @@ Route::group(['middleware' => 'auth'], function() {
     });
 
     // 工事進捗
-    Route::prefix('/maintenance-report')->name('maintenance-report.')->group(function () {
-        Route::get('/', [MaintenanceReportController::class, 'index'])->name('index');
-        Route::post('/', [MaintenanceReportController::class, 'post'])->name('post');
+    Route::prefix('/report')->name('report.')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::post('/', [ReportController::class, 'post'])->name('post');
     });
 
     /**
