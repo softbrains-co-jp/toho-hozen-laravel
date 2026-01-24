@@ -13,6 +13,7 @@ use App\Models\MstMember;
 use App\Models\MstSetup;
 use App\Models\MstRoad;
 use App\Models\MstApply;
+use App\Models\MstUser;
 use App\Models\MstKddiReport;
 use App\Http\Requests\Master\EditRequest;
 
@@ -21,6 +22,13 @@ class MasterController extends Controller
 {
     private $master;
     private $title;
+
+    public function __construct()
+    {
+        if (Auth::check() && Auth::user()->role < MstUser::ROLE_TOHO) {
+            abort(404);
+        }
+    }
 
     public function index($kind)
     {

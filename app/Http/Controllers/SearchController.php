@@ -12,8 +12,7 @@ use App\Models\MstStatus;
 use App\Models\MstMember;
 use App\Models\MstSetup;
 use App\Models\MstRoad;
-use App\Models\MstApply;
-use App\Models\MstKddiReport;
+use App\Models\MstUser;
 use App\Models\Maintenance;
 use App\Models\Exclusion;
 
@@ -25,6 +24,11 @@ class SearchController extends Controller
     public function index(Request $request)
     {
         $condition = $request->input();
+
+        // 一般ユーザの場合、施工業者は固定
+        if (Auth::user()->role == MstUser::ROLE_USER) {
+            $condition['trader_cd'] = Auth::user()->trader_cd;
+        }
 
         $list = [];
         $query = Maintenance::query();

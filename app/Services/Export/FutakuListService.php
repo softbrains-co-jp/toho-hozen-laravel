@@ -26,7 +26,7 @@ class FutakuListService
                 ->orWhereBetween('commit_date', [$from, $to]);
             })
             ->when($user->role == MstUser::ROLE_USER, function ($q) use ($user) {
-                $q->where('trader_cd', substr($user->login_id, 0, 3));
+                $q->where('trader_cd', $user->trader_cd);
             })
             ->orderBy('toh_cd')
             ->get();

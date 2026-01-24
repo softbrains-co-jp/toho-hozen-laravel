@@ -12,6 +12,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\ExclusionController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
 
 Route::group(['middleware' => 'auth'], function() {
     /**
@@ -68,6 +69,20 @@ Route::group(['middleware' => 'auth'], function() {
     Route::prefix('/exclusion')->name('exclusion.')->group(function () {
         Route::get('/', [ExclusionController::class, 'index'])->name('index');
         Route::post('/delete', [ExclusionController::class, 'delete'])->name('delete');
+    });
+
+    // ユーザ管理
+    Route::prefix('/user')->name('user.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::prefix('/add')->name('add.')->group(function () {
+            Route::get('/', [UserController::class, 'edit'])->name('index');
+            Route::post('/', [UserController::class, 'post'])->name('post');
+        });
+        Route::post('/delete', [UserController::class, 'delete'])->name('delete');
+        Route::prefix('/{id}')->name('edit.')->group(function () {
+            Route::get('/', [UserController::class, 'edit'])->name('index');
+            Route::post('/', [UserController::class, 'post'])->name('post');
+        });
     });
 
 });

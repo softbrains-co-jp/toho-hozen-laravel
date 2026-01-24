@@ -13,7 +13,6 @@ class ChokkinListService
     public function makeExcel($from, $to, $user) {
         $from = new Carbon($from);
         $to = new Carbon($to);
-        $traderPrefix = $user->role == MstUser::ROLE_USER ? substr($user->login_id, 0, 3) : null;
 
         $spreadsheet = IOFactory::load(resource_path('excel/template/chokkin-list.xls'));
         $sheet = $spreadsheet->getActiveSheet();
@@ -28,7 +27,9 @@ class ChokkinListService
                     ->orWhereBetween('t_term_end_date', [$from, $to])
                     ->orWhereBetween('t_term2_end_date', [$from, $to]);
             })
-            ->when($traderPrefix, fn($q) => $q->where('trader_cd', 'like', $traderPrefix . '%'))
+            ->when($user->role == MstUser::ROLE_USER, function ($q) use ($user) {
+                $q->where('trader_cd', $user->trader_cd);
+            })
             ->orderBy('toh_cd')
             ->get();
 

@@ -33,7 +33,11 @@
                     <tr>
                         <th>施工業者</th>
                         <td>
-                            <x-forms.select name="trader_cd" value="{{ $condition['trader_cd'] ?? '' }}" empty=" " :options="$traders" />
+                            @if (Auth::user()->role == App\Models\MstUser::ROLE_USER)
+                                {{ $traders[Auth::user()->trader_cd] ?? '' }}
+                            @else
+                                <x-forms.select name="trader_cd" value="{{ $condition['trader_cd'] ?? '' }}" empty=" " :options="$traders" />
+                            @endif
                         </td>
                         <th>工事進捗ステータス</th>
                         <td>

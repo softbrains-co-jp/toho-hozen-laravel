@@ -6,6 +6,7 @@ use App\Http\Requests\Report\UpdateRequest;
 use App\Models\Maintenance;
 use App\Models\MstMember;
 use App\Models\MstTrader;
+use App\Models\MstUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,6 +17,7 @@ class ReportController extends Controller
         // ログインユーザ
         $user = Auth::user();
 
+        // 施工業者一覧
         $traders = MstTrader::orderBy('sort', 'asc')
             ->orderBy('id', 'asc')
             ->get()
@@ -43,6 +45,11 @@ class ReportController extends Controller
             'construction_content' => $request->input('construction_content'),
             'progress_detail' => $request->input('progress_detail'),
         ];
+
+        // 一般ユーザの場合、施工業者は固定
+        if ($user->role == MstUser::ROLE_USER) {
+            $condition['trader_cd'] = $user->trader_cd;
+        }
 
         $list = [];
         if ($request->input('action') == 'list') {

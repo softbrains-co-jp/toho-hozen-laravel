@@ -6,10 +6,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Exclusion;
-
+use App\Models\MstUser;
 
 class ExclusionController extends Controller
 {
+    public function __construct()
+    {
+        if (Auth::check() && Auth::user()->role < MstUser::ROLE_TOHO) {
+            abort(404);
+        }
+    }
+
     public function index()
     {
         $list = Exclusion::orderBy('add_datetime', 'asc')

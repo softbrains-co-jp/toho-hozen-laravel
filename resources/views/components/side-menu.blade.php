@@ -47,11 +47,13 @@
                     <x-button.gray type="button" class="tw:w-full">複合条件検索</x-button.gray>
                 </a>
             </li>
-            <li class="tw:mt-[3px]">
-                <a href="{{ route('import.index') }}">
-                    <x-button.gray type="button" class="tw:w-full">帳票インポート</x-button.gray>
-                </a>
-            </li>
+            @if ($user->role >= App\Models\MstUser::ROLE_TOHO)
+                <li class="tw:mt-[3px]">
+                    <a href="{{ route('import.index') }}">
+                        <x-button.gray type="button" class="tw:w-full">帳票インポート</x-button.gray>
+                    </a>
+                </li>
+            @endif
             <li class="tw:mt-[3px]">
                 <a href="{{ route('export.index') }}">
                     <x-button.gray type="button" class="tw:w-full">帳票エクスポート</x-button.gray>
@@ -64,6 +66,7 @@
             </li>
         </ul>
     </div>
+    @if ($user->role >= App\Models\MstUser::ROLE_TOHO)
     <div class="tw:mb-5">
         ■マスタ管理
         <ul>
@@ -112,6 +115,13 @@
                     <x-button.gray type="button" class="tw:w-full">KDDI報告種別</x-button.gray>
                 </a>
             </li>
+            @if ($user->role == App\Models\MstUser::ROLE_ADMIN)
+                <li class="tw:mt-[3px]">
+                    <a href="{{ route('user.index') }}">
+                        <x-button.gray type="button" class="tw:w-full">ユーザ管理</x-button.gray>
+                    </a>
+                </li>
+            @endif
         </ul>
     </div>
     <div class="tw:mb-5">
@@ -124,6 +134,7 @@
             </li>
         </ul>
     </div>
+    @endif
     <div class="tw:mb-5">
         <ul>
             <li>
