@@ -34,7 +34,7 @@
                             <td>
                                 <div class="tw:flex tw:justify-center tw:gap-x-[10px]">
                                     <a href="{{ route('user.edit.index', ['id' => $item->id]) }}"><x-button.gray size="sm">編集</x-button.gray></a>
-                                    <x-button.gray size="sm" x-on:click="submitForm('{{ $item->toh_cd }}')">削除</x-button.gray>
+                                    <x-button.gray size="sm" x-on:click="submitForm('{{ $item->id }}')">削除</x-button.gray>
                                 </div>
                             </td>
                         </tr>
@@ -42,9 +42,9 @@
                 </tbody>
             </table>
         </div>
-        <form method="post" action="{{ route('search.delete') }}" x-ref="form">
+        <form method="post" action="{{ route('user.delete') }}" x-ref="form">
             @csrf
-            <input type="hidden" name="code" x-model="code">
+            <input type="hidden" name="id" x-model="id">
             @foreach(request()->query() as $key => $value)
                 <input type="hidden" name="url_query[{{ $key }}]" value="{{ $value }}">
             @endforeach
@@ -54,10 +54,10 @@
 <script>
     function deleteForm() {
         return {
-            code: '',
-            submitForm(code) {
-                if (confirm('保守管理表を削除します。\nよろしいですか？')) {
-                    this.code = code;
+            id: '',
+            submitForm(id) {
+                if (confirm('ユーザを削除します。\nよろしいですか？')) {
+                    this.id = id;
                     this.$nextTick(() => {
                         this.$refs.form.submit();
                     });

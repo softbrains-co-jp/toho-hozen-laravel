@@ -76,13 +76,13 @@ class UserController extends Controller
 
     public function delete(Request $request)
     {
-        $toh_cd = $request->input('toh_cd');
-        $data = Exclusion::where('toh_cd', $toh_cd);
+        $id = $request->input('id');
+        $data = MstUser::find($id);
         if (!$data) {
             abort(404);
         }
         $data->delete();
 
-        return redirect()->route('exclusion.index')->with('success', "データを削除しました。");
+        return redirect()->route('user.index')->with('success', "データを削除しました。");
     }
 }
