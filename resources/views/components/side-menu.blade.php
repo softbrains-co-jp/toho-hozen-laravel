@@ -1,7 +1,7 @@
 @props([
     'code' => '',
 ])
-<div class="tw:bg-pink01 tw:p-2 tw:h-fit">
+<div class="tw:bg-pink01 tw:p-2 tw:h-fit tw:min-h-full">
     <div class="tw:mb-5">
         <img src="/images/logo.png" class="tw:m-auto">
     </div>

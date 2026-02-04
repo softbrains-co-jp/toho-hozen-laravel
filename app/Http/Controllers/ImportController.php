@@ -225,7 +225,7 @@ class ImportController extends Controller
                 ->first();
             if (!$branch) {
                 $relocationImportLog[$fileName][] = "支社が正しくありません（{$relocationReception['branch_cd']}）";
-                $isCanImport = false;
+                // $isCanImport = false;
             }
 
             $maintenance = Maintenance::where('toh_cd', $relocationReception['toh_cd'])
@@ -235,12 +235,17 @@ class ImportController extends Controller
                 $isCanImport = false;
             }
 
+            if (strlen($relocationReception['toh_cd']) != 11 && strlen($relocationReception['toh_cd']) != 10) {
+                $relocationImportLog[$fileName][] = "管理番号が正しくありません。（{$relocationReception['toh_cd']}）";
+                $isCanImport = false;
+            }
+
             if ($isCanImport) {
                 $maintenance = Maintenance::create([
                     'kddi_cd' => $relocationReception['kddi_cd'],
                     'toh_cd' => $relocationReception['toh_cd'],
                     'relation_cd' => $relocationReception['relation_cd'],
-                    'branch_cd' => $branch->code,
+                    'branch_cd' => $branch?->code,
                     'work_address' => $relocationReception['work_address'],
                     'work_notes' => $relocationReception['work_notes'],
                     'order_notes' => $relocationReception['order_notes'],
@@ -256,6 +261,7 @@ class ImportController extends Controller
                     'add_datetime' => now(),
                     'edit_datetime' => now(),
                 ]);
+                $relocationImportLog[$fileName][] = "取り込みを行いました。（{$relocationReception['toh_cd']}）";
             }
         }
 
