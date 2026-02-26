@@ -204,6 +204,7 @@
         return {
             initForm: null,
             isChange: false,
+            displayStateStorageKey: 'hozen:main:display-state',
             showPeriodInfo: false,
             showConstructionInfo: false,
             showStopInfo: false,
@@ -213,6 +214,7 @@
             showSeikaInfo: false,
             init() {
                 const form = this.$refs.form;
+                this.restoreDisplayState();
                 this.initForm = new FormData(form);
 
                 // 入力・変更を監視
@@ -224,6 +226,34 @@
                 form.addEventListener('input', checkChange);
                 form.addEventListener('change', checkChange);
 
+            },
+            restoreDisplayState() {
+                try {
+                    const raw = sessionStorage.getItem(this.displayStateStorageKey);
+                    if (!raw) return;
+
+                    const state = JSON.parse(raw);
+                    this.showPeriodInfo = !!state.showPeriodInfo;
+                    this.showConstructionInfo = !!state.showConstructionInfo;
+                    this.showStopInfo = !!state.showStopInfo;
+                    this.showSubmissionInfo = !!state.showSubmissionInfo;
+                    this.showCompletionInfo = !!state.showCompletionInfo;
+                    this.showSummaryInfo = !!state.showSummaryInfo;
+                    this.showSeikaInfo = !!state.showSeikaInfo;
+                } catch (e) {
+                    sessionStorage.removeItem(this.displayStateStorageKey);
+                }
+            },
+            saveDisplayState() {
+                sessionStorage.setItem(this.displayStateStorageKey, JSON.stringify({
+                    showPeriodInfo: this.showPeriodInfo,
+                    showConstructionInfo: this.showConstructionInfo,
+                    showStopInfo: this.showStopInfo,
+                    showSubmissionInfo: this.showSubmissionInfo,
+                    showCompletionInfo: this.showCompletionInfo,
+                    showSummaryInfo: this.showSummaryInfo,
+                    showSeikaInfo: this.showSeikaInfo,
+                }));
             },
             search() {
                 const search_code = this.$refs.search_code.value;
@@ -238,24 +268,31 @@
             },
             togglePeriodInfo() {
                 this.showPeriodInfo = !this.showPeriodInfo;
+                this.saveDisplayState();
             },
             toggleConstructionInfo() {
                 this.showConstructionInfo = !this.showConstructionInfo;
+                this.saveDisplayState();
             },
             toggleStopInfo() {
                 this.showStopInfo = !this.showStopInfo;
+                this.saveDisplayState();
             },
             toggleSubmissionInfo() {
                 this.showSubmissionInfo = !this.showSubmissionInfo;
+                this.saveDisplayState();
             },
             toggleCompletionInfo() {
                 this.showCompletionInfo = !this.showCompletionInfo;
+                this.saveDisplayState();
             },
             toggleSummaryInfo() {
                 this.showSummaryInfo = !this.showSummaryInfo;
+                this.saveDisplayState();
             },
             toggleSeikaInfo() {
                 this.showSeikaInfo = !this.showSeikaInfo;
+                this.saveDisplayState();
             },
 
         }
