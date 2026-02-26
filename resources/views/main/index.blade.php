@@ -229,7 +229,7 @@
             },
             restoreDisplayState() {
                 try {
-                    const raw = sessionStorage.getItem(this.displayStateStorageKey);
+                    const raw = localStorage.getItem(this.displayStateStorageKey);
                     if (!raw) return;
 
                     const state = JSON.parse(raw);
@@ -241,11 +241,11 @@
                     this.showSummaryInfo = !!state.showSummaryInfo;
                     this.showSeikaInfo = !!state.showSeikaInfo;
                 } catch (e) {
-                    sessionStorage.removeItem(this.displayStateStorageKey);
+                    localStorage.removeItem(this.displayStateStorageKey);
                 }
             },
             saveDisplayState() {
-                sessionStorage.setItem(this.displayStateStorageKey, JSON.stringify({
+                localStorage.setItem(this.displayStateStorageKey, JSON.stringify({
                     showPeriodInfo: this.showPeriodInfo,
                     showConstructionInfo: this.showConstructionInfo,
                     showStopInfo: this.showStopInfo,

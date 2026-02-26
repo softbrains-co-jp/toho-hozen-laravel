@@ -138,7 +138,8 @@
     <div class="tw:mb-5">
         <ul>
             <li>
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}"
+                    onsubmit="localStorage.removeItem('hozen:main:display-state')">
                     @csrf
                     <x-button.gray type="submit" class="tw:w-full">ログアウト</x-button.gray>
                 </form>
