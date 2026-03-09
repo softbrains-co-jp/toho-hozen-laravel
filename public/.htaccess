@@ -1,3 +1,76 @@
+<IfModule mod_authz_core.c>
+    # Enable only when Apache env HOZEN_IP_RESTRICT=1 (production)
+    <If "%{ENV:TOHO_IP_RESTRICT} == '1'">
+        <RequireAll>
+            Require all denied
+            <RequireAny>
+                # 東邦本社回線
+                Require ip 61.125.134.11
+
+                # 日本テレシス株式会社 横浜営業所
+                Require ip 59.157.246.55
+
+                # 日本テレシス株式会社 本社
+                Require ip 59.157.246.17
+
+                # 日産通信株式会社(本社)
+                Require ip 210.136.7.223
+
+                # 日産通信株式会社(竜ヶ崎営業所)
+                Require ip 202.215.118.63
+
+                # 日産通信株式会社(ヨットコム)
+                Require ip 121.101.95.180
+
+                # 株式会社メディアワークス
+                Require ip 114.179.68.108
+
+                # 株式会社HOUSEI三園本社
+                Require ip 118.238.233.242
+
+                # ㈱テレ・エンジニアリング
+                Require ip 118.21.136.70
+
+                # ㈱テレ・エンジニアリング（サブ回線）
+                Require ip 61.204.173.25
+
+                # ㈱ウイーズネット（調査会社）
+                Require ip 125.200.80.109
+
+                # 三英電設㈱
+                Require ip 211.129.101.57
+
+                # 株式会社ＫＭＲ（本社・流山）
+                Require ip 175.132.87.75
+
+                # 東邦電気工業（KDDI文京構内）
+                Require ip 203.212.47.183
+
+                # 株式会社ＫＭＲ（板橋事務所）
+                Require ip 202.152.125.248
+
+                # 株式会社オプテック
+                Require ip 114.179.88.213
+
+                # 東京電測社
+                Require ip 202.221.41.148
+
+                # 日本フィールドワン株式会社
+                Require ip 119.245.201.111
+
+                # SBI OpenVPN
+                Require ip 133.242.229.34
+
+                # localhost
+                Require ip 127.0.0.1
+
+                # 内部ネットワーク
+                Require ip 10.1.1.1
+            </RequireAny>
+        </RequireAll>
+    </If>
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
