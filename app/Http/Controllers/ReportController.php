@@ -52,109 +52,106 @@ class ReportController extends Controller
         }
 
         $list = [];
-        if ($request->input('action') == 'list') {
-            $query = Maintenance::query()
-                ->with([
-                    'kddiReportType',
-                    'conductStartMember',
-                    'conductEndMember',
-                    'tSetupStartMember',
-                    'tSetupFinishMember',
-                    'setupStartMember',
-                    'setupFinishMember',
-                    'trader',
-                    'branch',
-                ]);
+        $query = Maintenance::query()
+            ->with([
+                'kddiReportType',
+                'conductStartMember',
+                'conductEndMember',
+                'tSetupStartMember',
+                'tSetupFinishMember',
+                'setupStartMember',
+                'setupFinishMember',
+                'trader',
+                'branch',
+            ]);
 
-            if ($trader_cd = $condition['trader_cd']) {
-                $query->where('trader_cd', $trader_cd);
+        if ($trader_cd = $condition['trader_cd']) {
+            $query->where('trader_cd', $trader_cd);
+        }
+
+        if ($maintenance_report_date = $condition['maintenance_report_date']) {
+            $query->where(function ($query) use ($maintenance_report_date) {
+                $query->where('work_plan_date', $maintenance_report_date)
+                    ->orWhere('conduct_plan_date', $maintenance_report_date)
+                    ->orWhere('t_setup_plan_date', $maintenance_report_date);
+            });
+        }
+
+        $maintenances = $query->orderBy('toh_cd')
+            ->get();
+
+        $no = 1;
+        foreach ($maintenances as $maintenance) {
+            $row = [];
+            // 現場調査
+            if ($maintenance->conduct_plan_date?->isSameDay($condition['maintenance_report_date'])) {
+                if ($condition['construction_content'] && $condition['construction_content'] != '1') continue;
+
+                $row = [
+                    'construction_content' => '現場調査',
+                    'member_name' => $maintenance->conduct_member_name,
+                    'time_cd' => $maintenance->conduct_time_cd,
+                    'start_time' => $maintenance->conduct_start_datetime,
+                    'start_member' => $maintenance->conductStartMember?->name,
+                    'end_time' => $maintenance->conduct_end_datetime,
+                    'end_member' => $maintenance->conductEndMember?->name,
+                ];
             }
 
-            if ($maintenance_report_date = $condition['maintenance_report_date']) {
-                $query->where(function ($query) use ($maintenance_report_date) {
-                    $query->where('work_plan_date', $maintenance_report_date)
-                        ->orWhere('conduct_plan_date', $maintenance_report_date)
-                        ->orWhere('t_setup_plan_date', $maintenance_report_date);
-                });
+            if ($maintenance->t_setup_plan_date?->isSameDay($condition['maintenance_report_date'])) {
+                if ($condition['construction_content'] && $condition['construction_content'] != '2') continue;
+
+                $row = [
+                    'construction_content' => '仮工事',
+                    'member_name' => $maintenance->t_setup_member_name,
+                    'time_cd' => $maintenance->t_setup_plan_time_cd,
+                    'start_time' => $maintenance->t_setup_start_datetime,
+                    'start_member' => $maintenance->tSetupStartMember?->name,
+                    'end_time' => $maintenance->t_setup_end_datetime,
+                    'end_member' => $maintenance->tSetupFinishMember?->name,
+                ];
             }
 
-            $maintenances = $query->orderBy('toh_cd')
-                ->get();
+            if ($maintenance->work_plan_date?->isSameDay($condition['maintenance_report_date'])) {
+                if ($condition['construction_content'] && $condition['construction_content'] != '3') continue;
 
-            $no = 1;
-            foreach ($maintenances as $maintenance) {
-                $row = [];
-                // 現場調査
-                if ($maintenance->conduct_plan_date?->isSameDay($condition['maintenance_report_date'])) {
-                    if ($condition['construction_content'] && $condition['construction_content'] != '1') continue;
-
-                    $row = [
-                        'construction_content' => '現場調査',
-                        'member_name' => $maintenance->conduct_member_name,
-                        'time_cd' => $maintenance->conduct_time_cd,
-                        'start_time' => $maintenance->conduct_start_datetime,
-                        'start_member' => $maintenance->conductStartMember?->name,
-                        'end_time' => $maintenance->conduct_end_datetime,
-                        'end_member' => $maintenance->conductEndMember?->name,
-                    ];
-                }
-
-                if ($maintenance->t_setup_plan_date?->isSameDay($condition['maintenance_report_date'])) {
-                    if ($condition['construction_content'] && $condition['construction_content'] != '2') continue;
-
-                    $row = [
-                        'construction_content' => '仮工事',
-                        'member_name' => $maintenance->t_setup_member_name,
-                        'time_cd' => $maintenance->t_setup_plan_time_cd,
-                        'start_time' => $maintenance->t_setup_start_datetime,
-                        'start_member' => $maintenance->tSetupStartMember?->name,
-                        'end_time' => $maintenance->t_setup_end_datetime,
-                        'end_member' => $maintenance->tSetupFinishMember?->name,
-                    ];
-                }
-
-                if ($maintenance->work_plan_date?->isSameDay($condition['maintenance_report_date'])) {
-                    if ($condition['construction_content'] && $condition['construction_content'] != '3') continue;
-
-                    $row = [
-                        'construction_content' => '本工事',
-                        'member_name' => $maintenance->setup_member_name,
-                        'time_cd' => $maintenance->work_plan_time_cd,
-                        'start_time' => $maintenance->work_start_datetime,
-                        'start_member' => $maintenance->setupStartMember?->name,
-                        'end_time' => $maintenance->work_end_datetime,
-                        'end_member' => $maintenance->setupFinishMember?->name,
-                    ];
-                }
-
-                // 各行のステータスを設定
-                $progress_detail = '';
-                if ($row['start_time'] && $row['end_time']) {
-                    $progress_detail = '3';
-                } elseif ($row['start_time']) {
-                    $progress_detail = '2';
-                } elseif ($maintenance->status_flg == '1') {
-                    $progress_detail = '4';
-                } else {
-                    $progress_detail = '1';
-                }
-
-                if ($condition['progress_detail'] && $condition['progress_detail'] != $progress_detail) {
-                    continue;
-                }
-
-                $list[] = [
-                    'no' => $no,
-                    'kddi_cd' => $maintenance->kddi_cd,
-                    'toh_cd' => $maintenance->toh_cd,
-                    'trader_name' => $maintenance->trader?->name,
-                    'branch_name' => $maintenance->branch?->name,
-                    'progress_detail' => $progress_detail,
-                ] + $row;
-
-                $no++;
+                $row = [
+                    'construction_content' => '本工事',
+                    'member_name' => $maintenance->setup_member_name,
+                    'time_cd' => $maintenance->work_plan_time_cd,
+                    'start_time' => $maintenance->work_start_datetime,
+                    'start_member' => $maintenance->setupStartMember?->name,
+                    'end_time' => $maintenance->work_end_datetime,
+                    'end_member' => $maintenance->setupFinishMember?->name,
+                ];
             }
 
+            // 各行のステータスを設定
+            $progress_detail = '';
+            if ($row['start_time'] && $row['end_time']) {
+                $progress_detail = '3';
+            } elseif ($row['start_time']) {
+                $progress_detail = '2';
+            } elseif ($maintenance->status_flg == '1') {
+                $progress_detail = '4';
+            } else {
+                $progress_detail = '1';
+            }
+
+            if ($condition['progress_detail'] && $condition['progress_detail'] != $progress_detail) {
+                continue;
+            }
+
+            $list[] = [
+                'no' => $no,
+                'kddi_cd' => $maintenance->kddi_cd,
+                'toh_cd' => $maintenance->toh_cd,
+                'trader_name' => $maintenance->trader?->name,
+                'branch_name' => $maintenance->branch?->name,
+                'progress_detail' => $progress_detail,
+            ] + $row;
+
+            $no++;
         }
 
         return view('report.index')

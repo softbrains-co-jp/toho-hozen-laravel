@@ -21,7 +21,6 @@ class ImportController extends Controller
     }
 
     public function importDailyReport(DailyReportRequest $request) {
-        $import = new DailyReportImport();
 
         // ログインユーザ
         $user = Auth::user();
@@ -33,9 +32,8 @@ class ImportController extends Controller
             $fileName = $file->getClientOriginalName();
             $import_log[$fileName] = [];
 
+            $import = new DailyReportImport();
             Excel::import($import, $file);
-
-            // dump($import->dailyReports);
 
             $row = 5;
             $isCanImport = true;
