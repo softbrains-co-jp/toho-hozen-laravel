@@ -1,7 +1,7 @@
 
 @livewireScripts
 @props([
-    'title' => '',
+    'title' => 'MAGI',
     'code' => '',
 ])
 <!DOCTYPE html>

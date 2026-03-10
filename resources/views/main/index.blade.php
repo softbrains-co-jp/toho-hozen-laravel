@@ -215,16 +215,41 @@
             init() {
                 const form = this.$refs.form;
                 this.restoreDisplayState();
-                this.initForm = new FormData(form);
+
+                const serializeForm = () => {
+                    const entries = [];
+
+                    for (const [name, value] of new FormData(form).entries()) {
+                        if (value instanceof File) {
+                            entries.push([name, {
+                                name: value.name,
+                                size: value.size,
+                                type: value.type,
+                                lastModified: value.lastModified,
+                            }]);
+                            continue;
+                        }
+                        entries.push([name, value]);
+                    }
+
+                    return JSON.stringify(entries);
+                };
 
                 // 入力・変更を監視
                 const checkChange = () => {
-                    const current = new FormData(form);
-                    this.isChange = JSON.stringify([...this.initForm]) !== JSON.stringify([...current]);
+                    if (this.initForm === null) return;
+                    this.isChange = this.initForm !== serializeForm();
                 };
 
-                form.addEventListener('input', checkChange);
-                form.addEventListener('change', checkChange);
+                // 子要素のx-init（flatpickrなど）による値整形完了後の状態を初期値にする
+                this.$nextTick(() => {
+                    window.setTimeout(() => {
+                        this.initForm = serializeForm();
+                        this.isChange = false;
+                        form.addEventListener('input', checkChange);
+                        form.addEventListener('change', checkChange);
+                    }, 0);
+                });
 
             },
             restoreDisplayState() {
