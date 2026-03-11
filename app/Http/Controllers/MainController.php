@@ -88,6 +88,7 @@ class MainController extends Controller
             })->first();
 
             if (!$maintenance) {
+                session()->forget('exclusion_toh_cd');
                 return redirect()->route('main.index')->with('error', "該当の管理番号{$code}はありません。");
             }
 
