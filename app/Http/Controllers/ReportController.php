@@ -77,7 +77,10 @@ class ReportController extends Controller
             });
         }
 
-        $maintenances = $query->orderBy('toh_cd')
+        $sort = $request->input('sort', 'kddi_cd');
+        $order = $request->input('order', 'desc');
+
+        $maintenances = $query->orderBy($sort, $order)
             ->get();
 
         $no = 1;
@@ -160,7 +163,9 @@ class ReportController extends Controller
                 'construction_content_options',
                 'progress_detail_options',
                 'condition',
-                'list'
+                'list',
+                'sort',
+                'order',
             ));
     }
 

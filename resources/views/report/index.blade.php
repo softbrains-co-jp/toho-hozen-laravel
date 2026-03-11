@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="tw:bg-pink01 tw:min-h-screen tw:p-2 tw:flex tw:flex-col" x-data="deleteForm()">
         <x-page-title>保守作業報告表</x-page-title>
-        <form method="get" action="{{ route('report.index') }}">
+        <form method="get" action="{{ route('report.index') }}" x-ref="searchForm">
             <table class="hozen-table tw:w-full">
                 <colgroup>
                     <col class="tw:w-[200px]">
@@ -39,6 +39,8 @@
             <div class="tw:mt-[20px] tw:flex tw:gap-x-[20px] tw:justify-center">
                 <x-button.gray type="submit" name="action" value="list">表示</x-button.gray>
             </div>
+            <input type="hidden" name="sort" value="{{ $sort }}" x-ref="searchSort" />
+            <input type="hidden" name="order" value="{{ $order }}" x-ref="searchOrder" />
         </form>
         <div class="tw:mt-[20px]">
             <x-error-message :errors="$errors" />
@@ -64,9 +66,31 @@
                     <thead class="tw:sticky tw:top-0">
                         <tr>
                             <th>No.</th>
-                            <th>管理番号</th>
+                            <th>
+                                管理番号
+                                @if ($sort == 'kddi_cd')
+                                    @if ($order == 'asc')
+                                        <i class="fa-solid fa-arrow-down-short-wide tw:cursor-pointer tw:text-red-600" @click="submitSort('kddi_cd', 'desc')"></i>
+                                    @else
+                                        <i class="fa-solid fa-arrow-down-wide-short tw:cursor-pointer tw:text-red-600" @click="submitSort('kddi_cd', 'asc')"></i>
+                                    @endif
+                                @else
+                                    <i class="fa-solid fa-arrow-down-wide-short tw:cursor-pointer" @click="submitSort('kddi_cd', 'desc')"></i>
+                                @endif
+                            </th>
                             <th>工事内容</th>
-                            <th>作業実施班</th>
+                            <th>
+                                作業実施班
+                                @if ($sort == 'trader_cd')
+                                    @if ($order == 'asc')
+                                        <i class="fa-solid fa-arrow-down-short-wide tw:cursor-pointer tw:text-red-600" @click="submitSort('trader_cd', 'desc')"></i>
+                                    @else
+                                        <i class="fa-solid fa-arrow-down-wide-short tw:cursor-pointer tw:text-red-600" @click="submitSort('trader_cd', 'asc')"></i>
+                                    @endif
+                                @else
+                                    <i class="fa-solid fa-arrow-down-wide-short tw:cursor-pointer" @click="submitSort('trader_cd', 'desc')"></i>
+                                @endif
+                            </th>
                             <th>作業員名</th>
                             <th>支社</th>
                             <th>進捗詳細</th>
@@ -124,6 +148,15 @@
                         this.$refs.form.submit();
                     });
                 }
+            },
+            submitSort(sort, order) {
+                if (!this.$refs.searchForm || !this.$refs.searchSort || !this.$refs.searchOrder) {
+                    return;
+                }
+
+                this.$refs.searchSort.value = sort;
+                this.$refs.searchOrder.value = order;
+                this.$refs.searchForm.submit();
             },
         }
     }
