@@ -28,7 +28,7 @@ class NippouKddiService
 
         foreach ($maintenances as $m) {
             $kubun = $this->getKubun($m->toh_cd);
-            $yoteibi = $this->getYoteibi($m, $date);
+            $yoteibi = $this->getYoteibi($m);
             $stopTime = $this->getStopTime($m);
             $ampm = $this->getAmpm($m);
             $hancho = $this->getHancho($m);
@@ -63,12 +63,24 @@ class NippouKddiService
         return '';
     }
 
-    private function getYoteibi($m, Carbon $date): ?Carbon
+    private function getYoteibi($m): ?Carbon
     {
+        $yoteibi = null;
+
         foreach (['conduct_plan_date', 't_setup_plan_date', 'work_plan_date'] as $field) {
-            if ($m->$field) return Carbon::parse($m->$field);
+            if (!$m->$field) {
+                continue;
+            }
+
+            try {
+                $yoteibi = Carbon::parse($m->$field);
+            } catch (\Throwable $e) {
+                // check_date 相当: 不正日付は採用しない
+                continue;
+            }
         }
-        return null;
+
+        return $yoteibi;
     }
 
     private function getStopTime($m): string
