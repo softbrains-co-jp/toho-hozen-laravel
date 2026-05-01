@@ -254,7 +254,6 @@ class ImportController extends Controller
                     't_term_end_date' => $relocationReception['t_term_end_date'],
                     'kddi_oder_date' => $relocationReception['kddi_oder_date'],
                     'stop_circuit_flg' => '02',
-                    'mc_open_flg' => '02',
                     'login_id' => $user->login_id,
                     'add_datetime' => now(),
                     'edit_datetime' => now(),

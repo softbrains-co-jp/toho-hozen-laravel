@@ -45,7 +45,7 @@
                     停止情報備考
                 </th>
                 <td colspan="5">
-                    <x-hozen.textarea type="text" name="stop_notes" rows="4">
+                    <x-hozen.textarea type="text" name="stop_notes" rows="8">
                         {{ old('stop_notes', $maintenance->stop_notes) }}
                     </x-hozen.textare>
                 </td>

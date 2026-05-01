@@ -29,25 +29,23 @@ class NippouKddiService
         foreach ($maintenances as $m) {
             $kubun = $this->getKubun($m->toh_cd);
             $yoteibi = $this->getYoteibi($m);
-            $stopTime = $this->getStopTime($m);
             $ampm = $this->getAmpm($m);
             $hancho = $this->getHancho($m);
             $stopCircuitFlg = $m->stop_circuit_flg === '01' ? '有' : ($m->stop_circuit_flg === '02' ? '無' : '');
-            $mcOpenFlg = $m->mc_open_flg === '01' ? '有' : ($m->mc_open_flg === '02' ? '無' : '');
             $workAddress = $this->cleanWorkAddress($m->work_address);
 
             $sheet->setCellValue([2, $rowNo], $rowNo-4);
             $sheet->setCellValue([3, $rowNo], $kubun);
             $sheet->setCellValue([4, $rowNo], $yoteibi?->format('Y/m/d'));
             $sheet->setCellValue([5, $rowNo], $stopCircuitFlg);
-            $sheet->setCellValue([6, $rowNo], $stopTime);
+            $sheet->setCellValue([6, $rowNo], '');
             $sheet->setCellValue([7, $rowNo], $m->toh_cd);
             $sheet->setCellValue([8, $rowNo], $ampm);
             $sheet->setCellValue([9, $rowNo], $hancho);
             $sheet->setCellValue([10, $rowNo], '東邦電気工業');
             $sheet->setCellValue([11, $rowNo], $m->trader?->name);
             $sheet->setCellValue([12, $rowNo], $workAddress);
-            $sheet->setCellValue([13, $rowNo], $mcOpenFlg);
+            $sheet->setCellValue([13, $rowNo], '無');
             $sheet->setCellValue([14, $rowNo], $m->pole_cd);
 
             $rowNo++;
@@ -81,11 +79,6 @@ class NippouKddiService
         }
 
         return $yoteibi;
-    }
-
-    private function getStopTime($m): string
-    {
-        return $m->stop_gepon_time ?: $m->stop_100m_time ?: '';
     }
 
     private function getAmpm($m): string
