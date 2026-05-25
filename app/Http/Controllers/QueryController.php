@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use App\Models\Maintenance;
 use App\Models\MstUser;
 
 class QueryController extends Controller
@@ -18,7 +19,7 @@ class QueryController extends Controller
 
     public function index()
     {
-        $maintenance_columns = DB::select(<<<'SQL'
+        $maintenance_columns = collect(DB::select(<<<'SQL'
             SELECT
                 a.attname AS name,
                 col_description(a.attrelid, a.attnum) AS comment
@@ -30,8 +31,11 @@ class QueryController extends Controller
                 AND a.attnum > 0
                 AND NOT a.attisdropped
             ORDER BY a.attnum
-        SQL, ['maintenance']);
+        SQL, ['maintenance']))
+            ->reject(fn ($column) => in_array($column->name, Maintenance::HIDDEN_QUERY_COLUMNS, true));
 
-        return view('query.index', compact('maintenance_columns'));
+        $maintenance_column_labels = Maintenance::COLUMN_LABELS;
+
+        return view('query.index', compact('maintenance_columns', 'maintenance_column_labels'));
     }
 }
