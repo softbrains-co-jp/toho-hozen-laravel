@@ -89,8 +89,8 @@ Route::group(['middleware' => 'auth'], function() {
     // クエリ作成機能
     Route::prefix('/query')->name('query.')->group(function () {
         Route::get('/', [QueryController::class, 'index'])->name('index');
+        Route::post('/', [QueryController::class, 'store'])->name('store');
     });
 
 
 });
-
