@@ -13,6 +13,7 @@ use App\Http\Controllers\MasterController;
 use App\Http\Controllers\ExclusionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\QueryController;
 
 Route::group(['middleware' => 'auth'], function() {
     /**
@@ -84,6 +85,12 @@ Route::group(['middleware' => 'auth'], function() {
             Route::post('/', [UserController::class, 'post'])->name('post');
         });
     });
+
+    // クエリ作成機能
+    Route::prefix('/query')->name('query.')->group(function () {
+        Route::get('/', [QueryController::class, 'index'])->name('index');
+    });
+
 
 });
 
