@@ -1,5 +1,16 @@
 <x-popup-layout>
     <div class="tw:p-[30px] tw:bg-pink01 tw:min-h-screen tw:p-2 tw:flex tw:flex-col" x-data="queryForm(@js($query_preset_data), @js($query_column_labels))">
+        <div
+            x-show="isProcessing"
+            x-cloak
+            style="display: none;"
+            class="tw:fixed tw:inset-0 tw:z-[100] tw:flex tw:items-center tw:justify-center tw:bg-black/50"
+        >
+            <div class="tw:bg-white tw:border tw:border-gray-400 tw:px-[40px] tw:py-[30px] tw:text-center tw:text-[14pt]">
+                <div>処理中です。</div>
+                <div>しばらくお待ちください</div>
+            </div>
+        </div>
         <x-page-title>クエリ作成機能</x-page-title>
         <form method="post" action="{{ route('query.store') }}" x-ref="saveForm">
             @csrf
@@ -44,7 +55,7 @@
                             <li
                                 class="tw:cursor-pointer tw:px-1"
                                 @click="selectColumn(@js($column->name), @js($maintenance_column_labels[$column->name] ?? $column->comment))"
-                                :class="{ 'tw:bg-yellow-200': selectedColumn === @js($column->name) }"
+                                :class="{ 'tw:bg-red-50': selectedColumn === @js($column->name) }"
                             >[{{ $column->name }}] {{ $maintenance_column_labels[$column->name] ?? $column->comment }}</li>
                         @endforeach
                     </ul>
@@ -69,7 +80,7 @@
                             <li
                                 class="tw:cursor-pointer tw:px-1"
                                 @click="selectDisplayColumn(column.name)"
-                                :class="{ 'tw:bg-yellow-200': selectedDisplayColumn === column.name }"
+                                :class="{ 'tw:bg-red-50': selectedDisplayColumn === column.name }"
                                 x-text="`[${column.name}] ${column.label ?? ''}`"
                             ></li>
                         </template>
@@ -80,7 +91,7 @@
         <div class="tw:mt-[20px]">
             <div class="tw:flex tw:bg-pink02">
                 <div class="tw:w-[400px] tw:h-[30px] tw:pl-2 tw:leading-[30px] tw:border tw:border-gray-400">項目名</div>
-                <div class="tw:h-[30px] tw:leading-[30px] tw:flex-1 tw:border-r tw:border-y tw:border-gray-400">検索条件</div>
+                <div class="tw:h-[30px] tw:leading-[30px] tw:px-[5px] tw:flex-1 tw:border-r tw:border-y tw:border-gray-400">検索条件</div>
                 <div class="tw:w-[80px] tw:h-[30px] tw:leading-[30px] tw:border-r tw:border-y tw:border-gray-400"></div>
             </div>
             <template x-for="(condition, index) in conditionColumns" :key="condition.id">
@@ -90,7 +101,7 @@
                         x-text="`[${condition.name}] ${condition.label ?? ''}`"
                     ></div>
                     <div class="tw:h-[30px] tw:leading-[30px] tw:flex-1 tw:flex tw:border-b tw:border-gray-400">
-                        <x-hozen.select name="" value="" empty=" " :options="[1=>'昇順', 2=>'降順']" class="tw:h-[30px]" x-model="condition.sort" x-bind:name="`conditions[${index}][sort]`" />
+                        <x-hozen.select name="" value="" empty=" " :options="[1=>'昇順', 2=>'降順']" class="tw:h-[30px] tw:w-[200px]" x-model="condition.sort" x-bind:name="`conditions[${index}][sort]`" />
                         <div class="tw:w-[400px] tw:shrink-0 tw:px-2 tw:bg-gray-200 tw:border-r tw:border-b tw:border-gray-100 tw:flex tw:gap-x-[20px]">
                             <x-forms.checkbox label="NULL" value="1" x-model="condition.isNull" x-bind:name="`conditions[${index}][is_null]`" />
                             <x-forms.checkbox label="NOT NULL" value="1" x-model="condition.isNotNull" x-bind:name="`conditions[${index}][is_not_null]`" />
@@ -105,6 +116,15 @@
                 </div>
             </template>
         </div>
+        <form method="get" action="{{ route('query.csv') }}" x-ref="csvForm" class="tw:hidden">
+            <input type="hidden" name="display_columns" x-ref="csvDisplayColumns">
+            <input type="hidden" name="conditions" x-ref="csvConditions">
+            <input type="hidden" name="download_token" x-ref="csvDownloadToken">
+        </form>
+        <div class="tw:mt-[50px] tw:flex tw:justify-center tw:gap-x-[40px]">
+            <x-button.blue class="tw:w-[150px] tw:h-[40px]">検索する</x-button.blue>
+            <x-button.gray class="tw:w-[150px] tw:h-[40px]" @click="submitCsv()">CSVで出力</x-button.gray>
+        </div>
     </div>
 </x-popup-layout>
 <script>
@@ -117,6 +137,7 @@
             selectedColumnLabel: null,
             selectedDisplayColumn: null,
             isSaveModalOpen: false,
+            isProcessing: false,
             presetName: '',
             displayColumns: [],
             conditionColumns: [],
@@ -308,6 +329,36 @@
                     is_not_null: condition.isNotNull,
                     is_empty: condition.isEmpty,
                 })));
+            },
+            submitCsv() {
+                if (this.displayColumns.length === 0) {
+                    alert('出力項目を設定してください。');
+                    return;
+                }
+                const hasSortOrder = this.conditionColumns.some(c => c.sort !== '' && c.sort !== null && c.sort !== undefined);
+                if (!hasSortOrder) {
+                    alert('並び順を指定してください。');
+                    return;
+                }
+
+                const token = Math.random().toString(36).substring(2);
+                this.$refs.csvDisplayColumns.value = this.displayColumnsJson();
+                this.$refs.csvConditions.value = this.conditionsJson();
+                this.$refs.csvDownloadToken.value = token;
+                this.$refs.csvForm.submit();
+
+                this.isProcessing = true;
+                const pollInterval = setInterval(() => {
+                    if (document.cookie.split(';').some(c => c.trim().startsWith('download_token=' + token))) {
+                        clearInterval(pollInterval);
+                        this.isProcessing = false;
+                        document.cookie = 'download_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+                    }
+                }, 300);
+                setTimeout(() => {
+                    clearInterval(pollInterval);
+                    this.isProcessing = false;
+                }, 60000);
             },
         }
     }
