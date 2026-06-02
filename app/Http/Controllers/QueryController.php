@@ -83,6 +83,34 @@ class QueryController extends Controller
         ));
     }
 
+    public function search(Request $request)
+    {
+        $displayColumns = json_decode($request->input('display_columns', '[]'), true) ?? [];
+        $conditions = json_decode($request->input('conditions', '[]'), true) ?? [];
+
+        $allowedColumns = $this->getAllowedColumns();
+        $columnLabels = Maintenance::COLUMN_LABELS;
+
+        $selectColumns = collect($displayColumns)
+            ->pluck('field')
+            ->filter(fn($col) => isset($allowedColumns[$col]))
+            ->values()
+            ->toArray();
+
+        $queryColumns = $this->mergeWithSortColumns($selectColumns, $conditions, $allowedColumns);
+        $query = Maintenance::query()->distinct()->select($queryColumns);
+        $this->applyConditions($query, $conditions, $allowedColumns);
+
+        $limit = 1001;
+        $records = $query->limit($limit)->get();
+        $exceeded = $records->count() >= $limit;
+        if ($exceeded) {
+            $records = $records->take(1000);
+        }
+
+        return view('query.search', compact('records', 'selectColumns', 'columnLabels', 'exceeded'));
+    }
+
     public function exportCsv(Request $request)
     {
         $displayColumns = json_decode($request->input('display_columns', '[]'), true) ?? [];
@@ -98,45 +126,9 @@ class QueryController extends Controller
             ->values()
             ->toArray();
 
-        $query = Maintenance::query()->select($selectColumns);
-
-        foreach ($conditions as $condition) {
-            $field = $condition['field'] ?? null;
-            if (!$field || !isset($allowedColumns[$field])) {
-                continue;
-            }
-
-            if (!empty($condition['is_null'])) {
-                $query->whereNull($field);
-            }
-            if (!empty($condition['is_not_null'])) {
-                $query->whereNotNull($field);
-            }
-            if (!empty($condition['is_empty'])) {
-                $query->where($field, '');
-            }
-            $type = $condition['type'] ?? 'text';
-            if ($type === 'date') {
-                if (!empty($condition['date_from'])) {
-                    $query->whereDate($field, '>=', Carbon::parse($condition['date_from'])->format('Y-m-d'));
-                }
-                if (!empty($condition['date_to'])) {
-                    $query->whereDate($field, '<=', Carbon::parse($condition['date_to'])->format('Y-m-d'));
-                }
-            } elseif ($type === 'master') {
-                if (!empty($condition['value'])) {
-                    $query->where($field, $condition['value']);
-                }
-            } else {
-                if (!empty($condition['value'])) {
-                    $query->where($field, 'like', '%' . $condition['value'] . '%');
-                }
-            }
-            if (!empty($condition['sort'])) {
-                $direction = (int)$condition['sort'] === 1 ? 'asc' : 'desc';
-                $query->orderBy($field, $direction);
-            }
-        }
+        $queryColumns = $this->mergeWithSortColumns($selectColumns, $conditions, $allowedColumns);
+        $query = Maintenance::query()->distinct()->select($queryColumns);
+        $this->applyConditions($query, $conditions, $allowedColumns);
 
         $records = $query->get();
         $filename = 'query_' . now()->format('YmdHis') . '.csv';
@@ -159,6 +151,91 @@ class QueryController extends Controller
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
+    }
+
+    private function mergeWithSortColumns(array $selectColumns, array $conditions, array $allowedColumns): array
+    {
+        $sortFields = collect($conditions)
+            ->filter(fn($c) => !empty($c['sort']) && isset($allowedColumns[$c['field'] ?? '']))
+            ->pluck('field')
+            ->toArray();
+
+        return array_values(array_unique(array_merge($selectColumns, $sortFields)));
+    }
+
+    private function applyConditions(\Illuminate\Database\Eloquent\Builder $query, array $conditions, array $allowedColumns): void
+    {
+        foreach ($conditions as $condition) {
+            $field = $condition['field'] ?? null;
+            if (!$field || !isset($allowedColumns[$field])) {
+                continue;
+            }
+
+            $type = $condition['type'] ?? 'text';
+            $whereCallbacks = $this->buildConditionCallbacks($field, $type, $condition);
+
+            if ($whereCallbacks) {
+                $query->where(function ($orQuery) use ($whereCallbacks) {
+                    foreach ($whereCallbacks as $index => $callback) {
+                        $index === 0
+                            ? $orQuery->where($callback)
+                            : $orQuery->orWhere($callback);
+                    }
+                });
+            }
+
+            if (!empty($condition['sort'])) {
+                $direction = (int)$condition['sort'] === 1 ? 'asc' : 'desc';
+                $query->orderBy($field, $direction);
+            }
+        }
+    }
+
+    private function buildConditionCallbacks(string $field, string $type, array $condition): array
+    {
+        $callbacks = [];
+
+        if (!empty($condition['is_null'])) {
+            $callbacks[] = fn ($q) => $q->whereNull($field);
+        }
+        if (!empty($condition['is_not_null'])) {
+            $callbacks[] = fn ($q) => $q->whereNotNull($field);
+        }
+        if ($type !== 'date' && !empty($condition['is_empty'])) {
+            $callbacks[] = fn ($q) => $q->where($field, '');
+        }
+
+        if ($type === 'date') {
+            $dateFrom = $condition['date_from'] ?? '';
+            $dateTo = $condition['date_to'] ?? '';
+            if ($dateFrom !== '' || $dateTo !== '') {
+                $callbacks[] = function ($q) use ($field, $dateFrom, $dateTo) {
+                    if ($dateFrom !== '') {
+                        $q->whereDate($field, '>=', Carbon::parse($dateFrom)->format('Y-m-d'));
+                    }
+                    if ($dateTo !== '') {
+                        $q->whereDate($field, '<=', Carbon::parse($dateTo)->format('Y-m-d'));
+                    }
+                };
+            }
+        } elseif ($type === 'master') {
+            if (array_key_exists('value', $condition) && $condition['value'] !== '') {
+                $callbacks[] = fn ($q) => $q->where($field, $condition['value']);
+            }
+        } elseif (array_key_exists('value', $condition) && $condition['value'] !== '') {
+            $callbacks[] = !empty($condition['is_like'])
+                ? fn ($q) => $q->where($field, 'like', $this->buildLikePattern((string)$condition['value']))
+                : fn ($q) => $q->where($field, $condition['value']);
+        }
+
+        return $callbacks;
+    }
+
+    private function buildLikePattern(string $value): string
+    {
+        $pattern = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
+
+        return '%' . $pattern . '%';
     }
 
     private function buildColumnMeta(): array

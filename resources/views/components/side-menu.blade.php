@@ -64,6 +64,9 @@
                     <x-button.gray type="button" class="tw:w-full">工事進捗</x-button.gray>
                 </a>
             </li>
+            <li class="tw:mt-[3px]">
+                <x-button.gray type="button" class="tw:w-full" onclick="window.open('{{ route('query.index') }}', 'query', 'width=1200,height=800')">クエリ</x-button.gray>
+            </li>
         </ul>
     </div>
     @if ($user->role >= App\Models\MstUser::ROLE_TOHO)

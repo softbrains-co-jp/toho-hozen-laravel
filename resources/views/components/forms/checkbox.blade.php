@@ -6,7 +6,7 @@
     'is_error' => false,
     'label_class' => ''
 ])
-<label class="tw:cursor-pointer tw:label">
+<label class="tw:cursor-pointer tw:label" {{ $attributes->whereStartsWith('x-show') }}>
     <input type="checkbox" name="{{ $name }}" value="{{ $value }}" {{ $attributes->merge(['class' => 'tw:checkbox tw:checkbox-sm tw:checkbox-primary tw:border-1 tw:border-solid  ' . ($is_error ? ' tw:bg-red-100 ' : ' tw:bg-white ')]) }} {{ (string)$checked === (string)$value ? 'checked' : '' }} >
     <span class="tw:ml-0 tw:font-normal {{ $label_class }}">{{ $label }}</span>
 </label>

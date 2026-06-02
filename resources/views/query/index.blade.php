@@ -25,7 +25,7 @@
                 <div class="tw:flex tw:items-center tw:gap-x-[10px]">
                     <x-button.gray @click="openSaveModal()">保存</x-button.gray>
                     <x-button.gray>削除</x-button.gray>
-                    <x-button.gray>クリア</x-button.gray>
+                    <x-button.gray @click="clearQuery()">クリア</x-button.gray>
                 </div>
             </div>
             <div
@@ -45,7 +45,7 @@
             </div>
         </form>
         <div class="tw:flex tw:gap-x-[30px]">
-            <div class="tw:flex-1">
+            <div class="tw:w-[450px]">
                 <div class="tw:h-[30px] tw:px-[10px] tw:leading-[30px] tw:bg-pink02">
                     保守管理
                 </div>
@@ -70,7 +70,7 @@
                 <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="moveDisplayColumnDown()"><i class="fa-solid fa-angle-down"></i></x-button.gray>
                 <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="moveDisplayColumnToBottom()"><i class="fa-solid fa-angles-down"></i></x-button.gray>
             </div>
-            <div class="tw:w-[500px]">
+            <div class="tw:flex-1">
                 <div class="tw:h-[30px] tw:px-[10px] tw:leading-[30px] tw:bg-pink02">
                      表示項目
                 </div>
@@ -102,10 +102,11 @@
                     ></div>
                     <div class="tw:h-[30px] tw:leading-[30px] tw:flex-1 tw:flex tw:border-b tw:border-gray-400">
                         <x-hozen.select name="" value="" empty=" " :options="[1=>'昇順', 2=>'降順']" class="tw:h-[30px] tw:!w-[100px]" x-model="condition.sort" x-bind:name="`conditions[${index}][sort]`" />
-                        <div class="tw:w-[400px] tw:shrink-0 tw:px-2 tw:bg-gray-200 tw:border-r tw:border-b tw:border-gray-100 tw:flex tw:gap-x-[20px]">
+                        <div class="tw:w-[400px] tw:shrink-0 tw:px-2 tw:bg-gray-200 tw:border-r tw:border-b tw:border-gray-100 tw:flex tw:gap-x-[16px]">
                             <x-forms.checkbox label="NULL" value="1" x-model="condition.isNull" x-bind:name="`conditions[${index}][is_null]`" />
                             <x-forms.checkbox label="NOT NULL" value="1" x-model="condition.isNotNull" x-bind:name="`conditions[${index}][is_not_null]`" />
-                            <x-forms.checkbox label="空文字" value="1" x-model="condition.isEmpty" x-bind:name="`conditions[${index}][is_empty]`" />
+                            <x-forms.checkbox label="空文字" value="1" x-show="condition.type !== 'date'" x-model="condition.isEmpty" x-bind:name="`conditions[${index}][is_empty]`" />
+                            <x-forms.checkbox label="LIKE" value="1" x-show="condition.type == 'text'" x-model="condition.isLike" x-bind:name="`conditions[${index}][is_like]`" />
                         </div>
                         <x-hozen.input name="" value="" empty=" " class="tw:h-[30px] tw:flex-1" x-show="condition.type !== 'date' && condition.type !== 'master'" x-model="condition.value" x-bind:name="`conditions[${index}][value]`" />
                         <div class="tw:flex tw:items-center tw:gap-x-1 tw:flex-1" x-show="condition.type === 'date'">
@@ -139,7 +140,7 @@
             <input type="hidden" name="download_token" x-ref="csvDownloadToken">
         </form>
         <div class="tw:mt-[50px] tw:flex tw:justify-center tw:gap-x-[40px]">
-            <x-button.blue class="tw:w-[150px] tw:h-[40px]">検索する</x-button.blue>
+            <x-button.blue class="tw:w-[150px] tw:h-[40px]" @click="submitSearch()">検索する</x-button.blue>
             <x-button.gray class="tw:w-[150px] tw:h-[40px]" @click="submitCsv()">CSVで出力</x-button.gray>
         </div>
     </div>
@@ -208,6 +209,7 @@
                     isNull: false,
                     isNotNull: false,
                     isEmpty: false,
+                    isLike: false,
                 });
             },
             removeConditionColumn(index) {
@@ -290,18 +292,21 @@
                             return null;
                         }
 
+                        const type = this.getColumnType(column.name);
+
                         return {
                             id: this.conditionColumnId++,
                             name: column.name,
                             label: column.label,
-                            type: this.getColumnType(column.name),
+                            type,
                             sort: condition.sort ?? '',
                             value: condition.value ?? '',
                             dateFrom: condition.date_from ?? '',
                             dateTo: condition.date_to ?? '',
-                            isNull: Boolean(condition.is_null ?? condition.isNull),
-                            isNotNull: Boolean(condition.is_not_null ?? condition.isNotNull),
-                            isEmpty: Boolean(condition.is_empty ?? condition.isEmpty),
+                            isNull: this.isTruthy(condition.is_null ?? condition.isNull) || condition.operator === 'null',
+                            isNotNull: this.isTruthy(condition.is_not_null ?? condition.isNotNull) || condition.operator === 'not_null',
+                            isEmpty: type !== 'date' && (this.isTruthy(condition.is_empty ?? condition.isEmpty) || condition.operator === 'empty'),
+                            isLike: type === 'text' && (this.isTruthy(condition.is_like ?? condition.isLike) || condition.operator === 'like'),
                         };
                     })
                     .filter(Boolean);
@@ -364,14 +369,33 @@
                     is_null: condition.isNull,
                     is_not_null: condition.isNotNull,
                     is_empty: condition.isEmpty,
+                    is_like: condition.isLike,
                 })));
             },
             getColumnType(name) {
                 return this.columnMeta[name]?.type ?? 'text';
             },
+            isTruthy(value) {
+                return value === true || value === 1 || value === '1';
+            },
             getMasterOptions(name) {
                 const options = this.columnMeta[name]?.options ?? {};
                 return Object.entries(options).map(([code, label]) => ({ code, label }));
+            },
+            submitSearch() {
+                if (this.displayColumns.length === 0) {
+                    alert('出力項目を設定してください。');
+                    return;
+                }
+                const params = new URLSearchParams({
+                    display_columns: this.displayColumnsJson(),
+                    conditions: this.conditionsJson(),
+                });
+                window.open(
+                    '{{ route('query.search') }}?' + params.toString(),
+                    'querySearchResult',
+                    'width=1400,height=800,scrollbars=yes,resizable=yes'
+                );
             },
             submitCsv() {
                 if (this.displayColumns.length === 0) {
