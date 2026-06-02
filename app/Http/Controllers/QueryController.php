@@ -2,12 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Maintenance;
+use App\Models\MstApply;
+use App\Models\MstBranch;
+use App\Models\MstKddiReport;
+use App\Models\MstMember;
+use App\Models\MstRequest;
+use App\Models\MstRoad;
+use App\Models\MstSetup;
+use App\Models\MstStatus;
+use App\Models\MstTrader;
 use App\Models\MstUser;
 use App\Models\QueryPreset;
 
@@ -61,12 +71,15 @@ class QueryController extends Controller
             ])
             ->toArray();
 
+        $query_column_meta = $this->buildColumnMeta();
+
         return view('query.index', compact(
             'maintenance_columns',
             'maintenance_column_labels',
             'query_column_labels',
             'query_preset_options',
             'query_preset_data',
+            'query_column_meta',
         ));
     }
 
@@ -102,8 +115,22 @@ class QueryController extends Controller
             if (!empty($condition['is_empty'])) {
                 $query->where($field, '');
             }
-            if (!empty($condition['value'])) {
-                $query->where($field, 'like', '%' . $condition['value'] . '%');
+            $type = $condition['type'] ?? 'text';
+            if ($type === 'date') {
+                if (!empty($condition['date_from'])) {
+                    $query->whereDate($field, '>=', Carbon::parse($condition['date_from'])->format('Y-m-d'));
+                }
+                if (!empty($condition['date_to'])) {
+                    $query->whereDate($field, '<=', Carbon::parse($condition['date_to'])->format('Y-m-d'));
+                }
+            } elseif ($type === 'master') {
+                if (!empty($condition['value'])) {
+                    $query->where($field, $condition['value']);
+                }
+            } else {
+                if (!empty($condition['value'])) {
+                    $query->where($field, 'like', '%' . $condition['value'] . '%');
+                }
             }
             if (!empty($condition['sort'])) {
                 $direction = (int)$condition['sort'] === 1 ? 'asc' : 'desc';
@@ -132,6 +159,43 @@ class QueryController extends Controller
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
+    }
+
+    private function buildColumnMeta(): array
+    {
+        $members = MstMember::orderBy('code')->pluck('name', 'code')->toArray();
+        $masterOptions = [
+            'branch_cd'          => MstBranch::orderBy('code')->pluck('name', 'code')->toArray(),
+            'trader_cd'          => MstTrader::orderBy('code')->pluck('name', 'code')->toArray(),
+            'status_cd'          => MstStatus::orderBy('code')->pluck('name', 'code')->toArray(),
+            'request_cd'         => MstRequest::orderBy('code')->pluck('name', 'code')->toArray(),
+            'setup_cd'           => MstSetup::orderBy('code')->pluck('name', 'code')->toArray(),
+            'apply_type'         => MstApply::orderBy('code')->pluck('name', 'code')->toArray(),
+            'kddi_report_type'   => MstKddiReport::orderBy('code')->pluck('name', 'code')->toArray(),
+            'road_cd'            => MstRoad::orderBy('code')->pluck('name', 'code')->toArray(),
+            'check_mcd'          => $members,
+            'conduct_start_mcd'  => $members,
+            'conduct_end_mcd'    => $members,
+            't_setup_start_mcd'  => $members,
+            't_setup_finish_mcd' => $members,
+            'setup_start_mcd'    => $members,
+            'setup_finish_mcd'   => $members,
+        ];
+
+        $meta = [];
+
+        $dateCols = array_keys(array_filter(
+            (new Maintenance())->getCasts(),
+            fn($cast) => str_starts_with($cast, 'date:')
+        ));
+        foreach ($dateCols as $col) {
+            $meta[$col] = ['type' => 'date'];
+        }
+        foreach ($masterOptions as $col => $options) {
+            $meta[$col] = ['type' => 'master', 'options' => $options];
+        }
+
+        return $meta;
     }
 
     private function getAllowedColumns(): array

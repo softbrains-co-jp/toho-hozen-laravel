@@ -1,5 +1,5 @@
 <x-popup-layout>
-    <div class="tw:p-[30px] tw:bg-pink01 tw:min-h-screen tw:p-2 tw:flex tw:flex-col" x-data="queryForm(@js($query_preset_data), @js($query_column_labels))">
+    <div class="tw:p-[30px] tw:bg-pink01 tw:min-h-screen tw:p-2 tw:flex tw:flex-col" x-data="queryForm(@js($query_preset_data), @js($query_column_labels), @js($query_column_meta))">
         <div
             x-show="isProcessing"
             x-cloak
@@ -101,13 +101,30 @@
                         x-text="`[${condition.name}] ${condition.label ?? ''}`"
                     ></div>
                     <div class="tw:h-[30px] tw:leading-[30px] tw:flex-1 tw:flex tw:border-b tw:border-gray-400">
-                        <x-hozen.select name="" value="" empty=" " :options="[1=>'昇順', 2=>'降順']" class="tw:h-[30px] tw:w-[200px]" x-model="condition.sort" x-bind:name="`conditions[${index}][sort]`" />
+                        <x-hozen.select name="" value="" empty=" " :options="[1=>'昇順', 2=>'降順']" class="tw:h-[30px] tw:!w-[100px]" x-model="condition.sort" x-bind:name="`conditions[${index}][sort]`" />
                         <div class="tw:w-[400px] tw:shrink-0 tw:px-2 tw:bg-gray-200 tw:border-r tw:border-b tw:border-gray-100 tw:flex tw:gap-x-[20px]">
                             <x-forms.checkbox label="NULL" value="1" x-model="condition.isNull" x-bind:name="`conditions[${index}][is_null]`" />
                             <x-forms.checkbox label="NOT NULL" value="1" x-model="condition.isNotNull" x-bind:name="`conditions[${index}][is_not_null]`" />
                             <x-forms.checkbox label="空文字" value="1" x-model="condition.isEmpty" x-bind:name="`conditions[${index}][is_empty]`" />
                         </div>
-                        <x-hozen.input name="" value="" empty=" " class="tw:h-[30px]" x-model="condition.value" x-bind:name="`conditions[${index}][value]`" />
+                        <x-hozen.input name="" value="" empty=" " class="tw:h-[30px] tw:flex-1" x-show="condition.type !== 'date' && condition.type !== 'master'" x-model="condition.value" x-bind:name="`conditions[${index}][value]`" />
+                        <div class="tw:flex tw:items-center tw:gap-x-1 tw:flex-1" x-show="condition.type === 'date'">
+                            <x-hozen.input-date value="" class="tw:!h-[30px] tw:flex-1 tw:shrink-0"
+                                @change="condition.dateFrom = $event.target.value"
+                                x-effect="if ($el._flatpickr) $el._flatpickr.setDate(condition.dateFrom, false)"
+                            />
+                            <span class="tw:shrink-0 tw:px-1">〜</span>
+                            <x-hozen.input-date value="" class="tw:!h-[30px] tw:flex-1 tw:shrink-0"
+                                @change="condition.dateTo = $event.target.value"
+                                x-effect="if ($el._flatpickr) $el._flatpickr.setDate(condition.dateTo, false)"
+                            />
+                        </div>
+                        <select class="tw:select tw:select-bordered tw:h-[30px] tw:bg-white tw:!pl-[5px] tw:flex-1 tw:text-[0.85rem]" x-show="condition.type === 'master'" x-model="condition.value">
+                            <option value=""></option>
+                            <template x-for="opt in getMasterOptions(condition.name)" :key="opt.code">
+                                <option :value="opt.code" x-text="opt.label"></option>
+                            </template>
+                        </select>
                         <input type="hidden" x-model="condition.name" x-bind:name="`conditions[${index}][field]`">
                     </div>
                     <div class="tw:h-[30px] tw:leading-[30px] tw:w-[80px] tw:border-r tw:border-b tw:border-gray-400">
@@ -128,10 +145,11 @@
     </div>
 </x-popup-layout>
 <script>
-    function queryForm(queryPresets, columnLabels) {
+    function queryForm(queryPresets, columnLabels, columnMeta) {
         return {
             queryPresets,
             columnLabels,
+            columnMeta,
             selectedPresetId: '',
             selectedColumn: null,
             selectedColumnLabel: null,
@@ -165,16 +183,28 @@
                 this.selectedDisplayColumn = null;
             },
             addConditionColumn() {
-                if (!this.selectedColumn) {
+                let name, label;
+                if (this.selectedColumn) {
+                    name = this.selectedColumn;
+                    label = this.selectedColumnLabel;
+                } else if (this.selectedDisplayColumn) {
+                    const col = this.displayColumns.find(c => c.name === this.selectedDisplayColumn);
+                    if (!col) return;
+                    name = col.name;
+                    label = col.label;
+                } else {
                     return;
                 }
 
                 this.conditionColumns.push({
                     id: this.conditionColumnId++,
-                    name: this.selectedColumn,
-                    label: this.selectedColumnLabel,
+                    name,
+                    label,
+                    type: this.getColumnType(name),
                     sort: '',
                     value: '',
+                    dateFrom: '',
+                    dateTo: '',
                     isNull: false,
                     isNotNull: false,
                     isEmpty: false,
@@ -264,8 +294,11 @@
                             id: this.conditionColumnId++,
                             name: column.name,
                             label: column.label,
+                            type: this.getColumnType(column.name),
                             sort: condition.sort ?? '',
                             value: condition.value ?? '',
+                            dateFrom: condition.date_from ?? '',
+                            dateTo: condition.date_to ?? '',
                             isNull: Boolean(condition.is_null ?? condition.isNull),
                             isNotNull: Boolean(condition.is_not_null ?? condition.isNotNull),
                             isEmpty: Boolean(condition.is_empty ?? condition.isEmpty),
@@ -323,12 +356,22 @@
             conditionsJson() {
                 return JSON.stringify(this.conditionColumns.map((condition) => ({
                     field: condition.name,
+                    type: condition.type,
                     sort: condition.sort,
                     value: condition.value,
+                    date_from: condition.dateFrom,
+                    date_to: condition.dateTo,
                     is_null: condition.isNull,
                     is_not_null: condition.isNotNull,
                     is_empty: condition.isEmpty,
                 })));
+            },
+            getColumnType(name) {
+                return this.columnMeta[name]?.type ?? 'text';
+            },
+            getMasterOptions(name) {
+                const options = this.columnMeta[name]?.options ?? {};
+                return Object.entries(options).map(([code, label]) => ({ code, label }));
             },
             submitCsv() {
                 if (this.displayColumns.length === 0) {
