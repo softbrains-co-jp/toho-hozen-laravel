@@ -25,9 +25,6 @@ class QueryController extends Controller
 {
     public function __construct()
     {
-        if (Auth::check() && Auth::user()->role !== MstUser::ROLE_ADMIN) {
-            abort(404);
-        }
     }
 
     public function index()
@@ -54,7 +51,7 @@ class QueryController extends Controller
             ])
             ->toArray();
 
-        $query_presets = QueryPreset::where('mst_user_id', Auth::id())
+        $query_presets = QueryPreset::query()
             ->orderBy('id')
             ->get(['id', 'name', 'display_columns', 'conditions']);
         $query_preset_options = $query_presets
@@ -108,7 +105,8 @@ class QueryController extends Controller
             $records = $records->take(1000);
         }
 
-        return view('query.search', compact('records', 'selectColumns', 'columnLabels', 'exceeded'));
+        $masterOptions = $this->buildMasterOptions();
+        return view('query.search', compact('records', 'selectColumns', 'columnLabels', 'exceeded', 'masterOptions'));
     }
 
     public function exportCsv(Request $request)
@@ -131,14 +129,15 @@ class QueryController extends Controller
         $this->applyConditions($query, $conditions, $allowedColumns);
 
         $records = $query->get();
+        $masterOptions = $this->buildMasterOptions();
         $filename = 'query_' . now()->format('YmdHis') . '.csv';
 
-        $callback = function () use ($records, $selectColumns, $columnLabels) {
+        $callback = function () use ($records, $selectColumns, $columnLabels, $masterOptions) {
             $handle = fopen('php://output', 'w');
             fputs($handle, "\xEF\xBB\xBF");
             fputcsv($handle, array_map(fn($col) => $columnLabels[$col] ?? $col, $selectColumns));
             foreach ($records as $record) {
-                fputcsv($handle, array_map(fn($col) => $record->$col ?? '', $selectColumns));
+                fputcsv($handle, array_map(fn($col) => $masterOptions[$col][$record->$col] ?? $record->$col ?? '', $selectColumns));
             }
             fclose($handle);
         };
@@ -238,10 +237,10 @@ class QueryController extends Controller
         return '%' . $pattern . '%';
     }
 
-    private function buildColumnMeta(): array
+    private function buildMasterOptions(): array
     {
         $members = MstMember::orderBy('code')->pluck('name', 'code')->toArray();
-        $masterOptions = [
+        return [
             'branch_cd'          => MstBranch::orderBy('code')->pluck('name', 'code')->toArray(),
             'trader_cd'          => MstTrader::orderBy('code')->pluck('name', 'code')->toArray(),
             'status_cd'          => MstStatus::orderBy('code')->pluck('name', 'code')->toArray(),
@@ -258,6 +257,11 @@ class QueryController extends Controller
             'setup_start_mcd'    => $members,
             'setup_finish_mcd'   => $members,
         ];
+    }
+
+    private function buildColumnMeta(): array
+    {
+        $masterOptions = $this->buildMasterOptions();
 
         $meta = [];
 

@@ -22,11 +22,13 @@
                     <div>クエリ名</div>
                     <x-hozen.select name="" value="" empty=" " class="tw:!w-[300px]" :options="$query_preset_options" x-model="selectedPresetId" @change="loadSelectedPreset()" />
                 </div>
-                <div class="tw:flex tw:items-center tw:gap-x-[10px]">
-                    <x-button.gray @click="openSaveModal()">保存</x-button.gray>
-                    <x-button.gray>削除</x-button.gray>
-                    <x-button.gray @click="clearQuery()">クリア</x-button.gray>
-                </div>
+                @if(auth()->user()->role === \App\Models\MstUser::ROLE_ADMIN)
+                    <div class="tw:flex tw:items-center tw:gap-x-[10px]">
+                        <x-button.gray @click="openSaveModal()">保存</x-button.gray>
+                        <x-button.gray>削除</x-button.gray>
+                        <x-button.gray @click="clearQuery()">クリア</x-button.gray>
+                    </div>
+                @endif
             </div>
             <div
                 x-show="isSaveModalOpen"
@@ -45,31 +47,34 @@
             </div>
         </form>
         <div class="tw:flex tw:gap-x-[30px]">
-            <div class="tw:w-[450px]">
-                <div class="tw:h-[30px] tw:px-[10px] tw:leading-[30px] tw:bg-pink02">
-                    保守管理
+
+            @if(auth()->user()->role === \App\Models\MstUser::ROLE_ADMIN)            
+                <div class="tw:w-[450px]">
+                    <div class="tw:h-[30px] tw:px-[10px] tw:leading-[30px] tw:bg-pink02">
+                        保守管理
+                    </div>
+                    <div class="tw:h-[400px] tw:p-2 tw:bg-white tw:overflow-y-auto">
+                        <ul>
+                            @foreach ($maintenance_columns as $column)
+                                <li
+                                    class="tw:cursor-pointer tw:px-1"
+                                    @click="selectColumn(@js($column->name), @js($maintenance_column_labels[$column->name] ?? $column->comment))"
+                                    :class="{ 'tw:bg-red-50': selectedColumn === @js($column->name) }"
+                                >[{{ $column->name }}] {{ $maintenance_column_labels[$column->name] ?? $column->comment }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
-                <div class="tw:h-[400px] tw:p-2 tw:bg-white tw:overflow-y-auto">
-                    <ul>
-                        @foreach ($maintenance_columns as $column)
-                            <li
-                                class="tw:cursor-pointer tw:px-1"
-                                @click="selectColumn(@js($column->name), @js($maintenance_column_labels[$column->name] ?? $column->comment))"
-                                :class="{ 'tw:bg-red-50': selectedColumn === @js($column->name) }"
-                            >[{{ $column->name }}] {{ $maintenance_column_labels[$column->name] ?? $column->comment }}</li>
-                        @endforeach
-                    </ul>
+                <div class="tw:w-[120px] tw:pt-[40px] tw:flex tw:flex-col tw:gap-y-[15px] tw:items-center">
+                    <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="addColumn()">追加</x-button.gray>
+                    <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="removeDisplayColumn()">削除</x-button.gray>
+                    <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="addConditionColumn()">条件</x-button.gray>
+                    <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="moveDisplayColumnToTop()"><i class="fa-solid fa-angles-up"></i></x-button.gray>
+                    <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="moveDisplayColumnUp()"><i class="fa-solid fa-angle-up"></i></x-button.gray>
+                    <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="moveDisplayColumnDown()"><i class="fa-solid fa-angle-down"></i></x-button.gray>
+                    <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="moveDisplayColumnToBottom()"><i class="fa-solid fa-angles-down"></i></x-button.gray>
                 </div>
-            </div>
-            <div class="tw:w-[120px] tw:pt-[40px] tw:flex tw:flex-col tw:gap-y-[15px] tw:items-center">
-                <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="addColumn()">追加</x-button.gray>
-                <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="removeDisplayColumn()">削除</x-button.gray>
-                <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="addConditionColumn()">条件</x-button.gray>
-                <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="moveDisplayColumnToTop()"><i class="fa-solid fa-angles-up"></i></x-button.gray>
-                <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="moveDisplayColumnUp()"><i class="fa-solid fa-angle-up"></i></x-button.gray>
-                <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="moveDisplayColumnDown()"><i class="fa-solid fa-angle-down"></i></x-button.gray>
-                <x-button.gray class="tw:w-[100px] tw:h-[30px]" @click="moveDisplayColumnToBottom()"><i class="fa-solid fa-angles-down"></i></x-button.gray>
-            </div>
+            @endif
             <div class="tw:flex-1">
                 <div class="tw:h-[30px] tw:px-[10px] tw:leading-[30px] tw:bg-pink02">
                      表示項目
@@ -92,7 +97,9 @@
             <div class="tw:flex tw:bg-pink02">
                 <div class="tw:w-[400px] tw:h-[30px] tw:pl-2 tw:leading-[30px] tw:border tw:border-gray-400">項目名</div>
                 <div class="tw:h-[30px] tw:leading-[30px] tw:px-[5px] tw:flex-1 tw:border-r tw:border-y tw:border-gray-400">検索条件</div>
-                <div class="tw:w-[80px] tw:h-[30px] tw:leading-[30px] tw:border-r tw:border-y tw:border-gray-400"></div>
+                @if(auth()->user()->role === \App\Models\MstUser::ROLE_ADMIN)
+                    <div class="tw:w-[80px] tw:h-[30px] tw:leading-[30px] tw:border-r tw:border-y tw:border-gray-400"></div>
+                @endif
             </div>
             <template x-for="(condition, index) in conditionColumns" :key="condition.id">
                 <div class="tw:flex">
@@ -101,8 +108,8 @@
                         x-text="`[${condition.name}] ${condition.label ?? ''}`"
                     ></div>
                     <div class="tw:h-[30px] tw:leading-[30px] tw:flex-1 tw:flex tw:border-b tw:border-gray-400">
-                        <x-hozen.select name="" value="" empty=" " :options="[1=>'昇順', 2=>'降順']" class="tw:h-[30px] tw:!w-[100px]" x-model="condition.sort" x-bind:name="`conditions[${index}][sort]`" />
-                        <div class="tw:w-[400px] tw:shrink-0 tw:px-2 tw:bg-gray-200 tw:border-r tw:border-b tw:border-gray-100 tw:flex tw:gap-x-[16px]">
+                        <x-hozen.select name="" value="" empty=" " :options="[1=>'昇順', 2=>'降順']" class="tw:h-[30px] tw:!w-[80px]" x-model="condition.sort" x-bind:name="`conditions[${index}][sort]`" />
+                        <div class="tw:w-[350px] tw:shrink-0 tw:px-2 tw:bg-gray-200 tw:border-r tw:border-b tw:border-gray-100 tw:flex tw:gap-x-[16px]">
                             <x-forms.checkbox label="NULL" value="1" x-model="condition.isNull" x-bind:name="`conditions[${index}][is_null]`" />
                             <x-forms.checkbox label="NOT NULL" value="1" x-model="condition.isNotNull" x-bind:name="`conditions[${index}][is_not_null]`" />
                             <x-forms.checkbox label="空文字" value="1" x-show="condition.type !== 'date'" x-model="condition.isEmpty" x-bind:name="`conditions[${index}][is_empty]`" />
@@ -128,9 +135,11 @@
                         </select>
                         <input type="hidden" x-model="condition.name" x-bind:name="`conditions[${index}][field]`">
                     </div>
-                    <div class="tw:h-[30px] tw:leading-[30px] tw:w-[80px] tw:border-r tw:border-b tw:border-gray-400">
-                        <x-button.gray class="tw:h-[29px] tw:w-full tw:!p-0 tw:!min-w-0 tw:!rounded-none tw:border-0" @click="removeConditionColumn(index)">削除</x-button.gray>
-                    </div>
+                    @if(auth()->user()->role === \App\Models\MstUser::ROLE_ADMIN)
+                        <div class="tw:h-[30px] tw:leading-[30px] tw:w-[80px] tw:border-r tw:border-b tw:border-gray-400">
+                            <x-button.gray class="tw:h-[29px] tw:w-full tw:!p-0 tw:!min-w-0 tw:!rounded-none tw:border-0" @click="removeConditionColumn(index)">削除</x-button.gray>
+                        </div>
+                    @endif
                 </div>
             </template>
         </div>
