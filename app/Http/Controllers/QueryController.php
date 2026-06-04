@@ -299,6 +299,13 @@ class QueryController extends Controller
             ->toArray();
     }
 
+    public function destroy(int $id)
+    {
+        QueryPreset::findOrFail($id)->delete();
+
+        return redirect()->route('query.index')->with('success', 'クエリを削除しました。');
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

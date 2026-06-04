@@ -25,7 +25,7 @@
                 @if(auth()->user()->role === \App\Models\MstUser::ROLE_ADMIN)
                     <div class="tw:flex tw:items-center tw:gap-x-[10px]">
                         <x-button.gray @click="openSaveModal()">保存</x-button.gray>
-                        <x-button.gray>削除</x-button.gray>
+                        <x-button.gray @click="deletePreset()">削除</x-button.gray>
                         <x-button.gray @click="clearQuery()">クリア</x-button.gray>
                     </div>
                 @endif
@@ -45,6 +45,10 @@
                     </div>
                 </div>
             </div>
+        </form>
+        <form method="post" x-ref="deleteForm" class="tw:hidden">
+            @csrf
+            @method('DELETE')
         </form>
         <div class="tw:flex tw:gap-x-[30px]">
 
@@ -390,6 +394,18 @@
             getMasterOptions(name) {
                 const options = this.columnMeta[name]?.options ?? {};
                 return Object.entries(options).map(([code, label]) => ({ code, label }));
+            },
+            deletePreset() {
+                if (!this.selectedPresetId) {
+                    alert('削除するクエリを選択してください。');
+                    return;
+                }
+                if (!confirm('選択中のクエリを削除します。よろしいですか？')) {
+                    return;
+                }
+
+                this.$refs.deleteForm.action = '{{ url('query') }}/' + this.selectedPresetId;
+                this.$refs.deleteForm.submit();
             },
             submitSearch() {
                 if (this.displayColumns.length === 0) {

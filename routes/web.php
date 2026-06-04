@@ -90,6 +90,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::prefix('/query')->name('query.')->group(function () {
         Route::get('/', [QueryController::class, 'index'])->name('index');
         Route::post('/', [QueryController::class, 'store'])->name('store');
+        Route::delete('/{id}', [QueryController::class, 'destroy'])->name('destroy');
         Route::get('/search', [QueryController::class, 'search'])->name('search');
         Route::get('/csv', [QueryController::class, 'exportCsv'])->name('csv');
     });
