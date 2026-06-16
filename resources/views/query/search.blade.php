@@ -27,7 +27,7 @@
                         @foreach ($records as $record)
                             <tr>
                                 @foreach ($selectColumns as $col)
-                                    <td class="tw:h-[25px] tw:leading-[25px]">{{ $masterOptions[$col][$record->$col] ?? $record->$col }}</td>
+                                    <td class="tw:h-[25px] tw:leading-[25px] tw:text-wrap">{{ $masterOptions[$col][$record->$col] ?? $record->$col }}</td>
                                 @endforeach
                             </tr>
                         @endforeach
