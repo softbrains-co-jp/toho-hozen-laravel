@@ -117,7 +117,6 @@
                             <x-forms.checkbox label="NULL" value="1" x-model="condition.isNull" x-bind:name="`conditions[${index}][is_null]`" />
                             <x-forms.checkbox label="NOT NULL" value="1" x-model="condition.isNotNull" x-bind:name="`conditions[${index}][is_not_null]`" />
                             <x-forms.checkbox label="空文字" value="1" x-show="condition.type !== 'date'" x-model="condition.isEmpty" x-bind:name="`conditions[${index}][is_empty]`" />
-                            <x-forms.checkbox label="LIKE" value="1" x-show="condition.type == 'text'" x-model="condition.isLike" x-bind:name="`conditions[${index}][is_like]`" />
                         </div>
                         <x-hozen.input name="" value="" empty=" " class="tw:h-[30px] tw:flex-1" x-show="condition.type !== 'date' && condition.type !== 'master'" x-model="condition.value" x-bind:name="`conditions[${index}][value]`" />
                         <div class="tw:flex tw:items-center tw:gap-x-1 tw:flex-1" x-show="condition.type === 'date'">
@@ -222,7 +221,6 @@
                     isNull: false,
                     isNotNull: false,
                     isEmpty: false,
-                    isLike: false,
                 });
             },
             removeConditionColumn(index) {
@@ -319,7 +317,6 @@
                             isNull: this.isTruthy(condition.is_null ?? condition.isNull) || condition.operator === 'null',
                             isNotNull: this.isTruthy(condition.is_not_null ?? condition.isNotNull) || condition.operator === 'not_null',
                             isEmpty: type !== 'date' && (this.isTruthy(condition.is_empty ?? condition.isEmpty) || condition.operator === 'empty'),
-                            isLike: type === 'text' && (this.isTruthy(condition.is_like ?? condition.isLike) || condition.operator === 'like'),
                         };
                     })
                     .filter(Boolean);
@@ -382,7 +379,6 @@
                     is_null: condition.isNull,
                     is_not_null: condition.isNotNull,
                     is_empty: condition.isEmpty,
-                    is_like: condition.isLike,
                 })));
             },
             getColumnType(name) {

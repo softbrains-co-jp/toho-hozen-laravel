@@ -222,9 +222,7 @@ class QueryController extends Controller
                 $callbacks[] = fn ($q) => $q->where($field, $condition['value']);
             }
         } elseif (array_key_exists('value', $condition) && $condition['value'] !== '') {
-            $callbacks[] = !empty($condition['is_like'])
-                ? fn ($q) => $q->where($field, 'like', $this->buildLikePattern((string)$condition['value']))
-                : fn ($q) => $q->where($field, $condition['value']);
+            $callbacks[] = fn ($q) => $q->where($field, 'like', $this->buildLikePattern((string)$condition['value']));
         }
 
         return $callbacks;
